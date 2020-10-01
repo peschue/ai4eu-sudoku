@@ -1,0 +1,49 @@
+
+div.maingrid {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display:grid;
+  grid-template-columns: 94px 94px 94px;
+  grid-template-rows: 94px 94px 94px;
+  grid-gap: 20px;
+}
+
+div.selector {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display:grid;
+  grid-template-columns: 30px 30px 30px;
+  grid-template-rows: 30px 30px 30px;
+  grid-gap: 2px;
+  position:absolute;
+}
+
+div.cell, div.item {
+  border: 1px solid black;
+  margin: 0;
+  padding: 5px;
+  grid-column-start: auto;
+  grid-row-start: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+div.statusbar {
+  width: 316px;
+  padding: 2px;
+  margin: 20px 0px;
+  border: 1px solid black;
+  display: block;
+}
+
+div.item {
+  background-color: lightgray;
+}
+
+div.active {
+  background-color: green;
+}
