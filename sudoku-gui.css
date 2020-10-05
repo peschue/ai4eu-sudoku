@@ -4,9 +4,19 @@ div.maingrid {
   border: 0;
   padding: 0;
   display:grid;
+  grid-template-columns: 288px 288px 288px;
+  grid-template-rows: 288px 288px 288px;
+  grid-gap: 0px;
+}
+
+div.subgrid {
+  margin: 0;
+  border: 2pt solid black;
+  padding: 0;
+  display:grid;
   grid-template-columns: 94px 94px 94px;
   grid-template-rows: 94px 94px 94px;
-  grid-gap: 20px;
+  grid-gap: 0px;
 }
 
 div.selector {
@@ -14,9 +24,9 @@ div.selector {
   border: 0;
   padding: 0;
   display:grid;
-  grid-template-columns: 30px 30px 30px;
-  grid-template-rows: 30px 30px 30px;
-  grid-gap: 2px;
+  grid-template-columns: 31px 31px 31px;
+  grid-template-rows: 31px 31px 31px;
+  grid-gap: 0px;
   position:absolute;
 }
 
