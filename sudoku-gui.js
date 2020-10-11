@@ -25,8 +25,12 @@ async function poll_for_gui_updates() {
   await $.ajax({
     url: 'wait_update?timeout_ms=10000',
     success: function(result) {
-      console.log("got gui update: "+JSON.stringify(result))
+      if( result != null ) {
+        console.log("got gui update: "+JSON.stringify(result))
 
+        $('#serverstatus').html(result.statusbar);
+
+      }
       // schedule this one immediately
       setTimeout(poll_for_gui_updates, 100);
     }

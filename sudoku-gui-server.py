@@ -6,6 +6,12 @@ import time
 import fastapi
 import fastapi.templating
 import pydantic
+import queue
+import grpc
+import concurrent.futures
+
+import sudoku_gui_pb2_grpc
+import sudoku_gui_pb2
 
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
@@ -24,6 +30,26 @@ class GUIUpdate(pydantic.BaseModel):
     statusbar: str
     field: List[FieldSpec]
 
+class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProcessorServicer):
+    def __init__(self, to_js_queue):
+        self.to_js_queue = to_js_queue
+
+    def processEvaluationResult(self, request, context):
+        logging.info("received evaluation result")
+
+        # pass this to javascript to send it to the GUI
+        statusstr = {
+            0: 'Sudoku has no solution',
+            1: 'Sudoku has a unique solution',
+            2: 'Sudoku has multiple solutions'
+        }[request.status]
+        # TODO send field as well        
+        gu = GUIUpdate(statusbar=statusstr, field=[])
+        self.to_js_queue.put(gu)
+
+        # dummy return
+        return sudoku_gui_pb2.Empty(empty=0)
+
 
 def create_app() -> fastapi.FastAPI:
 
@@ -36,8 +62,16 @@ app = create_app()
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "sudoku-gui-server-config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
-
+protobuf_to_js_queue = queue.Queue()
+js_to_protobuf_queue = queue.Queue()
 templates = fastapi.templating.Jinja2Templates(directory='templates')
+
+grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
+sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationResultProcessorServicer_to_server(GRPCResultProcessor(protobuf_to_js_queue), grpcserver)
+grpcport = 8001
+grpcserver.add_insecure_port('localhost:'+str(grpcport))
+logging.info("starting grpc server at port %d", grpcport)
+grpcserver.start()
 
 @app.get('/')
 def serve_website(request: fastapi.Request):
@@ -71,13 +105,13 @@ def wait_update(timeout_ms: int):
     milliseconds.
     '''
     logging.info("wait_update(%d)", timeout_ms)
+
     ret = None
 
-    time.sleep(5)
-    logging.warning("TODO IMPLEMENT")
-
-    ret = GUIUpdate(statusbar="new status", field=[])
-    ret.field.append(FieldSpec(x=1,y=1,content=27,cssclass='invalid'))
+    try:
+        ret = protobuf_to_js_queue.get(block=True, timeout=timeout_ms/1000.0)
+    except queue.Empty:
+        pass
 
     logging.info("wait_update returns (%s)", ret)
     return ret
