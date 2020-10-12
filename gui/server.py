@@ -66,7 +66,7 @@ def create_app() -> fastapi.FastAPI:
 
 app = create_app()
 
-configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config/gui-server-config.json"
+configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 protobuf_to_js_queue = queue.Queue()
@@ -75,7 +75,7 @@ templates = fastapi.templating.Jinja2Templates(directory='templates')
 
 grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
 sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationResultProcessorServicer_to_server(GRPCResultProcessor(protobuf_to_js_queue), grpcserver)
-grpcport = 8001
+grpcport = config['gui-grpcport']
 grpcserver.add_insecure_port('localhost:'+str(grpcport))
 logging.info("starting grpc server at port %d", grpcport)
 grpcserver.start()

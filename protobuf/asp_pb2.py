@@ -19,10 +19,48 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\tasp.proto\"L\n\nParameters\x12\x19\n\x11number_of_answers\x18\x01 \x01(\x05\x12#\n\x1breturn_only_optimal_answers\x18\x02 \x01(\x08\"=\n\tSolverJob\x12\x0f\n\x07program\x18\x01 \x01(\t\x12\x1f\n\nparameters\x18\x02 \x01(\x0b\x32\x0b.Parameters\"*\n\x0b\x43ostElement\x12\r\n\x05level\x18\x01 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x02 \x01(\x05\"Q\n\tAnswerset\x12\r\n\x05\x61toms\x18\x01 \x03(\t\x12\x1b\n\x05\x63osts\x18\x02 \x03(\x0b\x32\x0c.CostElement\x12\x18\n\x10is_known_optimal\x18\x03 \x01(\x08\"D\n\x11ResultDescription\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ode\x18\x02 \x01(\x05\x12\x10\n\x08messages\x18\x03 \x03(\t\"]\n\x15SolveResultAnswersets\x12\'\n\x0b\x64\x65scription\x18\x01 \x01(\x0b\x32\x12.ResultDescription\x12\x1b\n\x07\x61nswers\x18\x02 \x03(\x0b\x32\n.Answerset2<\n\rOneshotSolver\x12+\n\x05solve\x12\n.SolverJob\x1a\x16.SolveResultAnswersetsb\x06proto3')
+  serialized_pb=_b('\n\tasp.proto\"*\n\x0cKeyValuePair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"z\n\nParameters\x12\x19\n\x11number_of_answers\x18\x01 \x01(\x05\x12#\n\x1breturn_only_optimal_answers\x18\x02 \x01(\x08\x12,\n\x15\x61\x64\x64itional_parameters\x18\x03 \x03(\x0b\x32\r.KeyValuePair\"=\n\tSolverJob\x12\x0f\n\x07program\x18\x01 \x01(\t\x12\x1f\n\nparameters\x18\x02 \x01(\x0b\x32\x0b.Parameters\"*\n\x0b\x43ostElement\x12\r\n\x05level\x18\x01 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x02 \x01(\x05\"Q\n\tAnswerset\x12\r\n\x05\x61toms\x18\x01 \x03(\t\x12\x1b\n\x05\x63osts\x18\x02 \x03(\x0b\x32\x0c.CostElement\x12\x18\n\x10is_known_optimal\x18\x03 \x01(\x08\"D\n\x11ResultDescription\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ode\x18\x02 \x01(\x05\x12\x10\n\x08messages\x18\x03 \x03(\t\"]\n\x15SolveResultAnswersets\x12\'\n\x0b\x64\x65scription\x18\x01 \x01(\x0b\x32\x12.ResultDescription\x12\x1b\n\x07\x61nswers\x18\x02 \x03(\x0b\x32\n.Answerset2<\n\rOneshotSolver\x12+\n\x05solve\x12\n.SolverJob\x1a\x16.SolveResultAnswersetsb\x06proto3')
 )
 
 
+
+
+_KEYVALUEPAIR = _descriptor.Descriptor(
+  name='KeyValuePair',
+  full_name='KeyValuePair',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='KeyValuePair.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='KeyValuePair.value', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=13,
+  serialized_end=55,
+)
 
 
 _PARAMETERS = _descriptor.Descriptor(
@@ -46,6 +84,13 @@ _PARAMETERS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='additional_parameters', full_name='Parameters.additional_parameters', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -58,8 +103,8 @@ _PARAMETERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13,
-  serialized_end=89,
+  serialized_start=57,
+  serialized_end=179,
 )
 
 
@@ -96,8 +141,8 @@ _SOLVERJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=91,
-  serialized_end=152,
+  serialized_start=181,
+  serialized_end=242,
 )
 
 
@@ -134,8 +179,8 @@ _COSTELEMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=154,
-  serialized_end=196,
+  serialized_start=244,
+  serialized_end=286,
 )
 
 
@@ -179,8 +224,8 @@ _ANSWERSET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=198,
-  serialized_end=279,
+  serialized_start=288,
+  serialized_end=369,
 )
 
 
@@ -224,8 +269,8 @@ _RESULTDESCRIPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=281,
-  serialized_end=349,
+  serialized_start=371,
+  serialized_end=439,
 )
 
 
@@ -262,14 +307,16 @@ _SOLVERESULTANSWERSETS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=351,
-  serialized_end=444,
+  serialized_start=441,
+  serialized_end=534,
 )
 
+_PARAMETERS.fields_by_name['additional_parameters'].message_type = _KEYVALUEPAIR
 _SOLVERJOB.fields_by_name['parameters'].message_type = _PARAMETERS
 _ANSWERSET.fields_by_name['costs'].message_type = _COSTELEMENT
 _SOLVERESULTANSWERSETS.fields_by_name['description'].message_type = _RESULTDESCRIPTION
 _SOLVERESULTANSWERSETS.fields_by_name['answers'].message_type = _ANSWERSET
+DESCRIPTOR.message_types_by_name['KeyValuePair'] = _KEYVALUEPAIR
 DESCRIPTOR.message_types_by_name['Parameters'] = _PARAMETERS
 DESCRIPTOR.message_types_by_name['SolverJob'] = _SOLVERJOB
 DESCRIPTOR.message_types_by_name['CostElement'] = _COSTELEMENT
@@ -277,6 +324,13 @@ DESCRIPTOR.message_types_by_name['Answerset'] = _ANSWERSET
 DESCRIPTOR.message_types_by_name['ResultDescription'] = _RESULTDESCRIPTION
 DESCRIPTOR.message_types_by_name['SolveResultAnswersets'] = _SOLVERESULTANSWERSETS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+KeyValuePair = _reflection.GeneratedProtocolMessageType('KeyValuePair', (_message.Message,), dict(
+  DESCRIPTOR = _KEYVALUEPAIR,
+  __module__ = 'asp_pb2'
+  # @@protoc_insertion_point(class_scope:KeyValuePair)
+  ))
+_sym_db.RegisterMessage(KeyValuePair)
 
 Parameters = _reflection.GeneratedProtocolMessageType('Parameters', (_message.Message,), dict(
   DESCRIPTOR = _PARAMETERS,
@@ -328,8 +382,8 @@ _ONESHOTSOLVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=446,
-  serialized_end=506,
+  serialized_start=536,
+  serialized_end=596,
   methods=[
   _descriptor.MethodDescriptor(
     name='solve',

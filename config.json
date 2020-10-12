@@ -1,0 +1,6 @@
+{
+    "gui-webserverport": 8000,
+    "gui-grpcport": 8001,
+    "designevaluator-grpcport": 8002,
+    "aspsolver-grpcport": 8003
+}
