@@ -16,6 +16,6 @@ fi
 if /bin/true; then
     # run asp solver server
     pushd aspsolver
-    python3 server.py&
+    python3 server.py
     popd
 fi

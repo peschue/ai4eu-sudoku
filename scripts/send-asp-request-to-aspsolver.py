@@ -19,7 +19,7 @@ def main():
    stub = asp_pb2_grpc.OneshotSolverStub(channel)
 
    job = asp_pb2.SolverJob()
-   job.program = 'a :- not b. b :- not a. { c, d }.'
+   job.program = 'a :- not b. b :- not a. { c ; d }.'
    job.parameters.number_of_answers = 3
 
    response = stub.solve(job)

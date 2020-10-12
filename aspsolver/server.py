@@ -10,6 +10,9 @@ sys.path.append('../protobuf/')
 import asp_pb2_grpc
 import asp_pb2
 
+# this is the ASP solver! (e.g., conda install clingo)
+import clingo
+
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
@@ -21,7 +24,17 @@ class GRPCOneshotSolverServicer(asp_pb2_grpc.OneshotSolverServicer):
     def solve(self, request, context):
         logging.info("solve request: %s", request)
 
+        c = clingo.Control([ str(request.parameters.number_of_answers) ])
+        c.add('base', [], request.program)
+        c.ground([('base',[])])
+
         ret = asp_pb2.SolveResultAnswersets()
+        logging.info("solving")
+        for answer in c.solve(yield_=True):
+            logging.info("answer: %s", answer)
+            ans = asp_pb2.Answerset()
+            ans.atoms.extend([ str(a) for a in answer.symbols(atoms=True) ])
+            ret.answers.append(ans)
         return ret
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
