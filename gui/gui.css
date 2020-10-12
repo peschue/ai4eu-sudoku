@@ -57,3 +57,7 @@ div.item {
 div.active {
   background-color: green;
 }
+
+span.solution {
+  color: blue;
+}

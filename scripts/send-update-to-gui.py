@@ -2,7 +2,9 @@
 
 import logging
 import grpc
+import sys
 
+sys.path.append('../protobuf/')
 import sudoku_gui_pb2_grpc
 import sudoku_gui_pb2
 

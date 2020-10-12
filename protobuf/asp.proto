@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+message Parameters {
+  int32 number_of_answers = 1;
+  bool return_only_optimal_answers = 2;
+}
+
+message SolverJob {
+  // ASP Core-2 program
+  string program = 1;
+  Parameters parameters = 2;
+}
+
+message CostElement {
+  int32 level = 1;
+  int32 cost = 2;
+}
+
+message Answerset {
+  repeated string atoms = 1;
+  repeated CostElement costs = 2;
+  bool is_known_optimal = 3;
+}
+
+message ResultDescription {
+  bool success = 1;
+  int32 code = 2;
+  repeated string messages = 3;
+}
+
+message SolveResultAnswersets {
+  ResultDescription description = 1;
+  repeated Answerset answers = 2;
+}
+
+service OneshotSolver {
+    rpc solve(SolverJob) returns (SolveResultAnswersets);
+}

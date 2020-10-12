@@ -9,7 +9,9 @@ import pydantic
 import queue
 import grpc
 import concurrent.futures
+import sys
 
+sys.path.append('../protobuf/')
 import sudoku_gui_pb2_grpc
 import sudoku_gui_pb2
 
@@ -43,8 +45,13 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
             1: 'Sudoku has a unique solution',
             2: 'Sudoku has multiple solutions'
         }[request.status]
-        # TODO send field as well        
-        gu = GUIUpdate(statusbar=statusstr, field=[])
+        fields = []
+        if request.status == 1:
+            for v, xy in zip(request.solution, [ (col,row) for row in range(1,10)  for col in range(1,10)]):
+                #logging.info("v %d xy %s", v, xy)
+                fields.append(FieldSpec(x=xy[0], y=xy[1], content=v, cssclass='solution'))
+
+        gu = GUIUpdate(statusbar=statusstr, field=fields)
         self.to_js_queue.put(gu)
 
         # dummy return
@@ -59,7 +66,7 @@ def create_app() -> fastapi.FastAPI:
 
 app = create_app()
 
-configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "sudoku-gui-server-config.json"
+configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config/gui-server-config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 protobuf_to_js_queue = queue.Queue()
@@ -75,15 +82,15 @@ grpcserver.start()
 
 @app.get('/')
 def serve_website(request: fastapi.Request):
-    return templates.TemplateResponse("sudoku-gui.html", { 'request': request })
+    return templates.TemplateResponse("gui.html", { 'request': request })
 
-@app.get('/sudoku-gui.js')
+@app.get('/gui.js')
 def serve_js(request: fastapi.Request):
-    return fastapi.responses.FileResponse("sudoku-gui.js")
+    return fastapi.responses.FileResponse("gui.js")
 
-@app.get('/sudoku-gui.css')
+@app.get('/gui.css')
 def serve_css(request: fastapi.Request):
-    return fastapi.responses.FileResponse("sudoku-gui.css")
+    return fastapi.responses.FileResponse("gui.css")
 
 @app.put('/user_setcell', response_model=None)
 def setcell(x: int, y: int, value: Optional[int] = None) -> None:
