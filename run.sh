@@ -14,8 +14,24 @@ if /bin/false; then
 fi
 
 if /bin/true; then
-    # run asp solver server
-    pushd aspsolver
-    python3 server.py
+    # run design evaluator server
+    pushd evaluator
+    python3 server.py &
     popd
 fi
+
+
+if /bin/false; then
+    # run asp solver server
+    pushd aspsolver
+    python3 server.py &
+    popd
+fi
+
+if /bin/false; then
+    # run orchestrator
+    pushd orchestrator
+    python3 orchestrator.py
+    popd
+fi
+
