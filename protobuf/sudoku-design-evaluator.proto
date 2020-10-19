@@ -21,10 +21,15 @@ message SudokuDesignEvaluationResult {
   repeated int32 minimal_unsolvable = 3;
 }
 
+message KeyValuePair {
+  string key = 1;
+  string value = 2;
+}
+
 message Parameters {
-  // 0 means no limit (do not use that!)
   int32 number_of_answers = 1;
   bool return_only_optimal_answers = 2;
+  repeated KeyValuePair additional_parameters = 3;
 }
 
 message SolverJob {
