@@ -16,12 +16,48 @@ logging.basicConfig(level=logging.DEBUG)
 
 class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluationProblemEncoderServicer):
     def __init__(self):
-        pass
+        self.encoding = '''
+            % Adapted from an example by Hakan Kjellerstrand, hakank@gmail.com
+            % See also http://www.hakank.org/answer_set_programming/
+
+            % x(Row,Col,Value).
+
+            %
+            % domains
+            %
+            val(1..9).
+            border(1;4;7).
+
+            % alldifferent boxes
+            1 { x(X,Y,N) : val(X), val(Y), 
+                X1<=X, X<=X1+2, Y1<=Y, Y<=Y1+2 } 1 :- val(N), border(X1), border(Y1).
+
+            % alldifferent rows, columns
+            1 { x(X,Y,N) : val(X) } 1 :- val(N), val(Y).
+            1 { x(X,Y,N) : val(Y) } 1 :- val(N), val(X).
+
+            % guess values
+            1 { x(X,Y,N) : val(N) } 1 :- val(X), val(Y).
+
+            #show.
+            #show x/3.
+        '''
 
     def evaluateSudokuDesign(self, request, context):
         logging.info("evaluateSudokuDesign request: %s", request)
 
+        # we got the partial sudoku field
+        # we encode it as x(Row,Col,Value) and add the encoding
+        facts = '\n'.join([
+            'x({},{},{}).'.format(y+1,x+1,request.field[x+9*y])
+            for x in range(0,9)
+            for y in range(0,9)
+            if request.field[x+9*y] > 0
+        ])
+
         ret = sudoku_design_evaluator_pb2.SolverJob()
+        ret.parameters.number_of_answers = 2
+        ret.program = self.encoding + facts
         return ret
 
 class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluationResultDecoderServicer):
@@ -32,6 +68,20 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
         logging.info("processEvaluationResult request: %s", request)
 
         ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
+        ret.status = len(request.answers)
+
+        if ret.status in [1,2]:
+            # encode the single answer set
+            ret.solution.extend([ 0 for _ in range(0,81) ])
+            for atm in list(set(request.answers[0].atoms) & set(request.answers[1].atoms)):
+                # atm is of form x(x,y,val)
+                x, y, val = atm[2:-1].split(',')
+                x = int(x)-1
+                y = int(y)-1
+                val = int(val)
+                ret.solution[x+y*9] = val
+
+        logging.info("returning %s", ret)
         return ret
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"

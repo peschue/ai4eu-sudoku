@@ -17,8 +17,9 @@ import json
 import time
 import grpc
 import sys
+import traceback
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 logging.info("importing generated protobuf modules")
 
@@ -53,7 +54,7 @@ def main():
     aspsolver_stub = orchestrator_pb2_grpc.OneshotSolverStub(aspsolver_channel)
 
     while True:
-
+      try:
         logging.info("calling SudokuDesignEvaluationRequestDataBroker.requestSudokuEvaluation() with empty dummy")
         #dummy1 = sudoku_gui_pb2.SudokuDesignEvaluationRequest()
         dummy1 = orchestrator_pb2.SudokuDesignEvaluationRequest()
@@ -70,5 +71,10 @@ def main():
 
         logging.info("calling SudokuDesignEvaluationResultProcessor.processEvaluationResult() with payload %s", evalresult)
         dummy2 = gui_result_stub.processEvaluationResult(evalresult)
+
+      except Exception:
+        logging.error("exception (retrying after 2 seconds): %s", traceback.format_exc())
+        # do not spam
+        time.sleep(2)
 
 main()

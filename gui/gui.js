@@ -33,7 +33,7 @@ function set_cell(value) {
 
 async function poll_for_gui_updates() {
   await $.ajax({
-    url: 'wait_update?timeout_ms=1000',
+    url: 'wait_update?timeout_ms=5000',
     success: function(result) {
       if( result != null ) {
         console.log("got gui update: "+JSON.stringify(result))
@@ -84,4 +84,6 @@ $(document).ready(function() {
 
   $(document).click(reset)
 
+  // let server know that we reset
+  $.ajax({ type:'PUT', url: 'reset' })
 });

@@ -33,8 +33,9 @@ class GRPCOneshotSolverServicer(asp_pb2_grpc.OneshotSolverServicer):
         for answer in c.solve(yield_=True):
             logging.info("answer: %s", answer)
             ans = asp_pb2.Answerset()
-            ans.atoms.extend([ str(a) for a in answer.symbols(atoms=True) ])
+            ans.atoms.extend([ str(a) for a in answer.symbols(shown=True) ])
             ret.answers.append(ans)
+        logging.info("finished: %d answers", len(ret.answers))
         return ret
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
