@@ -76,18 +76,19 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
         # dummy return
         return sudoku_gui_pb2.Empty(empty=0)
 
-field = {}
-def reset_field():
-    field = {}
-
 def create_app() -> fastapi.FastAPI:
 
     app = fastapi.FastAPI(title='SudokuGUIServer', debug=True)
     app.logger = logger
-    reset_field()
     return app
 
 app = create_app()
+
+field = {}
+def reset_field():
+    global field
+    field = {}
+
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
 logging.info("loading config from %s", configfile)
@@ -117,7 +118,7 @@ def serve_css(request: fastapi.Request):
     return fastapi.responses.FileResponse("gui.css", headers={'Cache-Control': 'no-cache'})
 
 @app.put('/reset', response_model=None)
-def reset() -> None:
+def reset(request: fastapi.Request) -> None:
     '''
     Startup the GUI = set all fields to "uninitialized"
     This is a single-user server!
@@ -135,8 +136,9 @@ def setcell(x: int, y: int, value: Optional[int] = None) -> None:
     # 0-based indexing
     x = x - 1
     y = y - 1
-    
+
     key = (x,y)
+    global field
     if value is not None:
         field[key] = value
     else:
