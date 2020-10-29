@@ -14,6 +14,8 @@ function reset() {
 
 function reset_cell() {
   let cellid = active_cell.attr('id')
+  let x = cellid.split('_')[0]
+  let y = cellid.split('_')[1]
   console.log("resetting cell "+cellid)
   active_cell.removeClass('active')
   active_cell.find('user').html('?')
@@ -36,7 +38,8 @@ async function poll_for_gui_updates() {
     url: 'wait_update?timeout_ms=5000',
     success: function(result) {
       if( result != null ) {
-        console.log("got gui update: "+JSON.stringify(result))
+        //console.log("got gui update: "+JSON.stringify(result))
+        console.log("got gui update with statusbar "+result.statusbar)
         $('#serverstatus').html(result.statusbar)
         for(var f of result.field) {
           //console.log("f "+JSON.stringify(f));
@@ -45,7 +48,6 @@ async function poll_for_gui_updates() {
           $(sel1).find('.'+f.cssclass).html('&nbsp;=>&nbsp;'+f.content);
         }
         $('.solution').css('visibility', 'visible');
-        active_cell.find('.user').html(value)
       }
       // schedule this one immediately
       setTimeout(poll_for_gui_updates, 100);
@@ -72,7 +74,8 @@ $(document).ready(function() {
 
   $('.item').click(function() {
     let current = $(this).html();
-    if( $(this).hasClass('active') ) {
+    //console.log("current = "+current+" active_cell = "+JSON.stringify(active_cell));
+    if( active_cell.find('.user').html() == current ) {
       reset_cell()
     } else {
       set_cell(current)
