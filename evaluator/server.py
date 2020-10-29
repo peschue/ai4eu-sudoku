@@ -81,7 +81,7 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
                 val = int(val)
                 ret.solution[x+y*9] = val
 
-        logging.info("returning %s", ret)
+        logging.info("returning status %d and solution with %d elements", ret.status, len(ret.solution))
         return ret
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"

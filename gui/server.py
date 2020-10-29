@@ -174,5 +174,6 @@ def wait_update(timeout_ms: int):
     except queue.Empty:
         pass
 
-    logging.info("wait_update returns (%s)", ret)
+    if ret != None:
+        logging.info("wait_update returns status %s and a field with %d elements", ret.statusbar, len(ret.field))
     return ret

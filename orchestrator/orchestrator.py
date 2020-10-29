@@ -60,16 +60,18 @@ def main():
         dummy1 = orchestrator_pb2.SudokuDesignEvaluationRequest()
         guijob = gui_request_stub.requestSudokuEvaluation(dummy1)
 
-        logging.info("calling SudokuDesignEvaluationProblemEncoder.evaluateSudokuDesign() with payload %s", guijob)
+        logging.info("calling SudokuDesignEvaluationProblemEncoder.evaluateSudokuDesign() with guijob")
         solverjob = evaluator_program_encoder_stub.evaluateSudokuDesign(guijob)
 
-        logging.info("calling OneshotSolver.solve() with payload %s", solverjob)
+        logging.info("calling OneshotSolver.solve() with parameters %s", solverjob.parameters)
         aspresult = aspsolver_stub.solve(solverjob)
 
-        logging.info("calling SudokuDesignEvaluationResultDecoder.processEvaluationResult() with payload %s", aspresult)
+        logging.info("calling SudokuDesignEvaluationResultDecoder.processEvaluationResult() with %d answer sets and description %s",
+          len(aspresult.answers), aspresult.description)
         evalresult = evaluator_result_decoder_stub.processEvaluationResult(aspresult)
 
-        logging.info("calling SudokuDesignEvaluationResultProcessor.processEvaluationResult() with payload %s", evalresult)
+        logging.info("calling SudokuDesignEvaluationResultProcessor.processEvaluationResult() with status %d, len(solution)=%d, len(minimal_unsolvable)=%s",
+          evalresult.status, len(evalresult.solution), len(evalresult.minimal_unsolvable))
         dummy2 = gui_result_stub.processEvaluationResult(evalresult)
 
       except Exception:
