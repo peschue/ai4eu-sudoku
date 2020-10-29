@@ -18,6 +18,7 @@ import sudoku_gui_pb2
 
 logger = logging.getLogger(__name__)
 # set logging level in uvicorn!
+logging.basicConfig(level=logging.INFO)
 
 class FieldSpec(pydantic.BaseModel):
 
