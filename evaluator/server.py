@@ -1,10 +1,11 @@
-import os
-import logging
-import json
-import time
-import grpc
 import concurrent.futures
+import grpc
+import json
+import logging
+import os
+import re
 import sys
+import time
 
 sys.path.append('../protobuf/')
 import sudoku_design_evaluator_pb2_grpc
@@ -44,7 +45,7 @@ class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_p
         '''
 
     def evaluateSudokuDesign(self, request, context):
-        logging.info("evaluateSudokuDesign request: %s", request)
+        logging.info("evaluateSudokuDesign request with field of size %d", len(request.field))
 
         # we got the partial sudoku field
         # we encode it as x(Row,Col,Value) and add the encoding
@@ -67,7 +68,7 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
         pass
 
     def processEvaluationResult(self, request, context):
-        logging.info("processEvaluationResult request: %s", request)
+        logging.info("processEvaluationResult request with %s atoms in respective answer sets", [ len(ans.atoms) for ans in request.answers ])
 
         ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
         ret.status = len(request.answers)
@@ -82,6 +83,9 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
                 y = int(y)-1
                 val = int(val)
                 ret.solution[x+y*9] = val
+
+            logging.warning("processEvaluationResult filtered atoms[0] %s", [ f for f in request.answers[0].atoms if re.match(r'x\([12],[12],.\)', f) ])
+
 
         logging.info("returning status %d and solution with %d elements", ret.status, len(ret.solution))
         return ret

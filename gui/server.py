@@ -66,10 +66,11 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
         }[request.status]
         fields = []
         if request.status in [1,2]:
-            for v, xy in zip(request.solution, [ (col,row) for row in range(1,10)  for col in range(1,10)]):
-                #logging.info("v %d xy %s", v, xy)
-                if v in range(1,10):
-                    fields.append(FieldSpec(x=xy[0], y=xy[1], content=v, cssclass='solution'))
+            for row in range(0,9):
+                for col in range(0,9):
+                    v = request.solution[col+9*row]
+                    if v in range(1,10):
+                        fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='solution'))
 
         gu = GUIUpdate(statusbar=statusstr, field=fields)
         self.to_js_queue.put(gu)
@@ -145,6 +146,7 @@ def setcell(x: int, y: int, value: Optional[int] = None) -> None:
     else:
         if key in field:
             del(field[key])
+    logging.info("after setcell: field has %d values set", len(field))
 
     # return design evaluation job from requestSudokuEvaluation()
     ret = sudoku_gui_pb2.SudokuDesignEvaluationJob()
@@ -154,7 +156,9 @@ def setcell(x: int, y: int, value: Optional[int] = None) -> None:
         x, y = k
         ret.field[x+9*y] = v
 
+    logging.info("GUI sending user activity ...")
     js_to_protobuf_queue.put(ret)
+    logging.info("... sent")
 
     return None
 
@@ -171,6 +175,7 @@ def wait_update(timeout_ms: int):
 
     try:
         ret = protobuf_to_js_queue.get(block=True, timeout=timeout_ms/1000.0)
+        logging.info("GUI got update from protobuf!")
     except queue.Empty:
         pass
 
