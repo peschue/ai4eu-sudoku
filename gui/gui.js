@@ -18,7 +18,7 @@ function reset_cell() {
   let y = cellid.split('_')[1]
   console.log("resetting cell "+cellid)
   active_cell.removeClass('active')
-  active_cell.find('user').html('?')
+  active_cell.find('.user').html('?')
   hide_solution()
   $.ajax({ type:'PUT', url: 'user_setcell?x='+x+'&y='+y })
 }
