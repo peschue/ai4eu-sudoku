@@ -24,16 +24,22 @@ class GRPCOneshotSolverServicer(asp_pb2_grpc.OneshotSolverServicer):
     def solve(self, request, context):
         logging.info("solve request: %s", request)
 
-        c = clingo.Control([ str(request.parameters.number_of_answers) ])
+        c = clingo.Control([ str(request.parameters.number_of_answers), '--opt-mode=optN' ])
         c.add('base', [], request.program)
         c.ground([('base',[])])
 
         ret = asp_pb2.SolveResultAnswersets()
         logging.info("solving")
         for answer in c.solve(yield_=True):
+            if answer.cost != [] and not answer.optimality_proven:
+                logging.info("skipping non-optimality-proven answer with cost %s", answer.cost)
+                continue
+
             logging.info("answer: %s", answer)
             ans = asp_pb2.Answerset()
             ans.atoms.extend([ str(a) for a in answer.symbols(shown=True) ])
+            ans.costs.extend([ asp_pb2.CostElement(level=level,cost=cost) for level,cost in enumerate(answer.cost) ])
+            ans.is_known_optimal = answer.optimality_proven
             ret.answers.append(ans)
         logging.info("finished: %d answers", len(ret.answers))
         return ret
