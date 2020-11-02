@@ -71,7 +71,7 @@ def main():
         evalresult = evaluator_result_decoder_stub.processEvaluationResult(aspresult)
 
         logging.info("calling SudokuDesignEvaluationResultProcessor.processEvaluationResult() with status %d, len(solution)=%d, len(minimal_unsolvable)=%s",
-          evalresult.status, len(evalresult.solution), len(evalresult.minimal_unsolvable))
+          evalresult.status, len(evalresult.solution), len(evalresult.inconsistency_involved))
         dummy2 = gui_result_stub.processEvaluationResult(evalresult)
 
       except Exception:

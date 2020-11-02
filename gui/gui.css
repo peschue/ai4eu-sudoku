@@ -28,12 +28,14 @@ div.selector {
   grid-template-rows: 31px 31px 31px;
   grid-gap: 0px;
   position:absolute;
+  width: 93px;
+  height: 93px;
 }
 
 div.cell, div.item {
   border: 1px solid black;
-  margin: 0;
-  padding: 5px;
+  margin: 0px;
+  padding: 0px;
   grid-column-start: auto;
   grid-row-start: auto;
   display: flex;
@@ -42,8 +44,15 @@ div.cell, div.item {
   background-color: white;
 }
 
+div.selector div.item {
+  width: 19px; /* 31 - 10 -2 */
+  height: 19px;
+  padding: 5px;
+}
+
 div.statusbar {
-  width: 316px;
+  width: 860px;
+  height: 50px;
   padding: 2px;
   margin: 20px 0px;
   border: 1px solid black;
@@ -59,5 +68,9 @@ div.active {
 }
 
 span.solution {
-  color: blue;
+  color: white;
+  background-color: blue;
+}
+span.problem {
+  color: red;
 }

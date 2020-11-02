@@ -69,8 +69,14 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
             for row in range(0,9):
                 for col in range(0,9):
                     v = request.solution[col+9*row]
-                    if v in range(1,10):
+                    if v != 0:
                         fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='solution'))
+        elif request.status == 0:
+            for row in range(0,9):
+                for col in range(0,9):
+                    v = request.inconsistency_involved[col+9*row]
+                    if v != 0:
+                        fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='problem'))
 
         gu = GUIUpdate(statusbar=statusstr, field=fields)
         self.to_js_queue.put(gu)

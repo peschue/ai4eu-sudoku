@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x10sudoku-gui.proto\"0\n\x1dSudokuDesignEvaluationRequest\x12\x0f\n\x07version\x18\x01 \x01(\x03\"*\n\x19SudokuDesignEvaluationJob\x12\r\n\x05\x66ield\x18\x01 \x03(\x05\"\\\n\x1cSudokuDesignEvaluationResult\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x03(\x05\x12\x1a\n\x12minimal_unsolvable\x18\x03 \x03(\x05\"\x16\n\x05\x45mpty\x12\r\n\x05\x65mpty\x18\x01 \x01(\x03\x32\x80\x01\n\'SudokuDesignEvaluationRequestDataBroker\x12U\n\x17requestSudokuEvaluation\x12\x1e.SudokuDesignEvaluationRequest\x1a\x1a.SudokuDesignEvaluationJob2i\n%SudokuDesignEvaluationResultProcessor\x12@\n\x17processEvaluationResult\x12\x1d.SudokuDesignEvaluationResult\x1a\x06.Emptyb\x06proto3')
+  serialized_pb=_b('\n\x10sudoku-gui.proto\"0\n\x1dSudokuDesignEvaluationRequest\x12\x0f\n\x07version\x18\x01 \x01(\x03\"*\n\x19SudokuDesignEvaluationJob\x12\r\n\x05\x66ield\x18\x01 \x03(\x05\"`\n\x1cSudokuDesignEvaluationResult\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x03(\x05\x12\x1e\n\x16inconsistency_involved\x18\x03 \x03(\x05\"\x16\n\x05\x45mpty\x12\r\n\x05\x65mpty\x18\x01 \x01(\x03\x32\x80\x01\n\'SudokuDesignEvaluationRequestDataBroker\x12U\n\x17requestSudokuEvaluation\x12\x1e.SudokuDesignEvaluationRequest\x1a\x1a.SudokuDesignEvaluationJob2i\n%SudokuDesignEvaluationResultProcessor\x12@\n\x17processEvaluationResult\x12\x1d.SudokuDesignEvaluationResult\x1a\x06.Emptyb\x06proto3')
 )
 
 
@@ -109,7 +109,7 @@ _SUDOKUDESIGNEVALUATIONRESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='minimal_unsolvable', full_name='SudokuDesignEvaluationResult.minimal_unsolvable', index=2,
+      name='inconsistency_involved', full_name='SudokuDesignEvaluationResult.inconsistency_involved', index=2,
       number=3, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -128,7 +128,7 @@ _SUDOKUDESIGNEVALUATIONRESULT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=114,
-  serialized_end=206,
+  serialized_end=210,
 )
 
 
@@ -158,8 +158,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=208,
-  serialized_end=230,
+  serialized_start=212,
+  serialized_end=234,
 )
 
 DESCRIPTOR.message_types_by_name['SudokuDesignEvaluationRequest'] = _SUDOKUDESIGNEVALUATIONREQUEST
@@ -204,8 +204,8 @@ _SUDOKUDESIGNEVALUATIONREQUESTDATABROKER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=233,
-  serialized_end=361,
+  serialized_start=237,
+  serialized_end=365,
   methods=[
   _descriptor.MethodDescriptor(
     name='requestSudokuEvaluation',
@@ -228,8 +228,8 @@ _SUDOKUDESIGNEVALUATIONRESULTPROCESSOR = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=363,
-  serialized_end=468,
+  serialized_start=367,
+  serialized_end=472,
   methods=[
   _descriptor.MethodDescriptor(
     name='processEvaluationResult',

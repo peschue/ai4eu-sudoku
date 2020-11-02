@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1dsudoku-design-evaluator.proto\"*\n\x19SudokuDesignEvaluationJob\x12\r\n\x05\x66ield\x18\x01 \x03(\x05\"\\\n\x1cSudokuDesignEvaluationResult\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x03(\x05\x12\x1a\n\x12minimal_unsolvable\x18\x03 \x03(\x05\"*\n\x0cKeyValuePair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"z\n\nParameters\x12\x19\n\x11number_of_answers\x18\x01 \x01(\x05\x12#\n\x1breturn_only_optimal_answers\x18\x02 \x01(\x08\x12,\n\x15\x61\x64\x64itional_parameters\x18\x03 \x03(\x0b\x32\r.KeyValuePair\"=\n\tSolverJob\x12\x0f\n\x07program\x18\x01 \x01(\t\x12\x1f\n\nparameters\x18\x02 \x01(\x0b\x32\x0b.Parameters\"*\n\x0b\x43ostElement\x12\r\n\x05level\x18\x01 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x02 \x01(\x05\"Q\n\tAnswerset\x12\r\n\x05\x61toms\x18\x01 \x03(\t\x12\x1b\n\x05\x63osts\x18\x02 \x03(\x0b\x32\x0c.CostElement\x12\x18\n\x10is_known_optimal\x18\x03 \x01(\x08\"D\n\x11ResultDescription\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ode\x18\x02 \x01(\x05\x12\x10\n\x08messages\x18\x03 \x03(\t\"]\n\x15SolveResultAnswersets\x12\'\n\x0b\x64\x65scription\x18\x01 \x01(\x0b\x32\x12.ResultDescription\x12\x1b\n\x07\x61nswers\x18\x02 \x03(\x0b\x32\n.Answerset2f\n$SudokuDesignEvaluationProblemEncoder\x12>\n\x14\x65valuateSudokuDesign\x12\x1a.SudokuDesignEvaluationJob\x1a\n.SolverJob2w\n#SudokuDesignEvaluationResultDecoder\x12P\n\x17processEvaluationResult\x12\x16.SolveResultAnswersets\x1a\x1d.SudokuDesignEvaluationResultb\x06proto3')
+  serialized_pb=_b('\n\x1dsudoku-design-evaluator.proto\"*\n\x19SudokuDesignEvaluationJob\x12\r\n\x05\x66ield\x18\x01 \x03(\x05\"`\n\x1cSudokuDesignEvaluationResult\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08solution\x18\x02 \x03(\x05\x12\x1e\n\x16inconsistency_involved\x18\x03 \x03(\x05\"*\n\x0cKeyValuePair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"z\n\nParameters\x12\x19\n\x11number_of_answers\x18\x01 \x01(\x05\x12#\n\x1breturn_only_optimal_answers\x18\x02 \x01(\x08\x12,\n\x15\x61\x64\x64itional_parameters\x18\x03 \x03(\x0b\x32\r.KeyValuePair\"=\n\tSolverJob\x12\x0f\n\x07program\x18\x01 \x01(\t\x12\x1f\n\nparameters\x18\x02 \x01(\x0b\x32\x0b.Parameters\"*\n\x0b\x43ostElement\x12\r\n\x05level\x18\x01 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x02 \x01(\x05\"Q\n\tAnswerset\x12\r\n\x05\x61toms\x18\x01 \x03(\t\x12\x1b\n\x05\x63osts\x18\x02 \x03(\x0b\x32\x0c.CostElement\x12\x18\n\x10is_known_optimal\x18\x03 \x01(\x08\"D\n\x11ResultDescription\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ode\x18\x02 \x01(\x05\x12\x10\n\x08messages\x18\x03 \x03(\t\"]\n\x15SolveResultAnswersets\x12\'\n\x0b\x64\x65scription\x18\x01 \x01(\x0b\x32\x12.ResultDescription\x12\x1b\n\x07\x61nswers\x18\x02 \x03(\x0b\x32\n.Answerset2f\n$SudokuDesignEvaluationProblemEncoder\x12>\n\x14\x65valuateSudokuDesign\x12\x1a.SudokuDesignEvaluationJob\x1a\n.SolverJob2w\n#SudokuDesignEvaluationResultDecoder\x12P\n\x17processEvaluationResult\x12\x16.SolveResultAnswersets\x1a\x1d.SudokuDesignEvaluationResultb\x06proto3')
 )
 
 
@@ -78,7 +78,7 @@ _SUDOKUDESIGNEVALUATIONRESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='minimal_unsolvable', full_name='SudokuDesignEvaluationResult.minimal_unsolvable', index=2,
+      name='inconsistency_involved', full_name='SudokuDesignEvaluationResult.inconsistency_involved', index=2,
       number=3, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -97,7 +97,7 @@ _SUDOKUDESIGNEVALUATIONRESULT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=77,
-  serialized_end=169,
+  serialized_end=173,
 )
 
 
@@ -134,8 +134,8 @@ _KEYVALUEPAIR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=171,
-  serialized_end=213,
+  serialized_start=175,
+  serialized_end=217,
 )
 
 
@@ -179,8 +179,8 @@ _PARAMETERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=215,
-  serialized_end=337,
+  serialized_start=219,
+  serialized_end=341,
 )
 
 
@@ -217,8 +217,8 @@ _SOLVERJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=339,
-  serialized_end=400,
+  serialized_start=343,
+  serialized_end=404,
 )
 
 
@@ -255,8 +255,8 @@ _COSTELEMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=402,
-  serialized_end=444,
+  serialized_start=406,
+  serialized_end=448,
 )
 
 
@@ -300,8 +300,8 @@ _ANSWERSET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=446,
-  serialized_end=527,
+  serialized_start=450,
+  serialized_end=531,
 )
 
 
@@ -345,8 +345,8 @@ _RESULTDESCRIPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=529,
-  serialized_end=597,
+  serialized_start=533,
+  serialized_end=601,
 )
 
 
@@ -383,8 +383,8 @@ _SOLVERESULTANSWERSETS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=599,
-  serialized_end=692,
+  serialized_start=603,
+  serialized_end=696,
 )
 
 _PARAMETERS.fields_by_name['additional_parameters'].message_type = _KEYVALUEPAIR
@@ -474,8 +474,8 @@ _SUDOKUDESIGNEVALUATIONPROBLEMENCODER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=694,
-  serialized_end=796,
+  serialized_start=698,
+  serialized_end=800,
   methods=[
   _descriptor.MethodDescriptor(
     name='evaluateSudokuDesign',
@@ -498,8 +498,8 @@ _SUDOKUDESIGNEVALUATIONRESULTDECODER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=798,
-  serialized_end=917,
+  serialized_start=802,
+  serialized_end=921,
   methods=[
   _descriptor.MethodDescriptor(
     name='processEvaluationResult',
