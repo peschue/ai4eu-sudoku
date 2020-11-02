@@ -48,12 +48,14 @@ class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_p
 
         # we got the partial sudoku field
         # we encode it as x(Row,Col,Value) and add the encoding
-        facts = '\n'.join([
-            'x({},{},{}).'.format(y+1,x+1,request.field[x+9*y])
+        facts = [
+            'x({},{},{}).'.format(x+1,y+1,request.field[x+9*y])
             for x in range(0,9)
             for y in range(0,9)
             if request.field[x+9*y] > 0
-        ])
+        ]
+        logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
+        facts = '\n'.join(facts)
 
         ret = sudoku_design_evaluator_pb2.SolverJob()
         ret.parameters.number_of_answers = 2
