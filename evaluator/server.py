@@ -93,7 +93,17 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
-grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
+grpcserver = grpc.server(
+    concurrent.futures.ThreadPoolExecutor(max_workers=10),
+    options=(
+        ('grpc.keepalive_time_ms', 10000), # send each 10 seconds
+        ('grpc.keepalive_timeout_ms', 3000), # 3 second = timeout
+        ('grpc.keepalive_permit_without_calls', True), # allow ping without RPC calls
+        ('grpc.http2.max_pings_without_data', 0), # allow unlimited pings without data
+        ('grpc.http2.min_time_between_pings_ms', 5000), # allow pings every 10 seconds
+        ('grpc.http2.min_ping_interval_without_data_ms', 5000), # allow pings without data every 5 seconds
+    )
+)
 sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationProblemEncoderServicer_to_server(GRPCSudokuDesignEvaluationProblemEncoderServicer(), grpcserver)
 sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationResultDecoderServicer_to_server(GRPCSudokuDesignEvaluationResultDecoderServicer(), grpcserver)
 grpcport = config['designevaluator-grpcport']
