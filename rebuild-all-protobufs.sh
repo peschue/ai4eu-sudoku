@@ -3,18 +3,18 @@
 # Dockerfile 
 
 pushd gui
-python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. sudoku-gui.proto
+python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 popd
 
 pushd aspsolver
-python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. asp.proto
+python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 popd
 
 pushd evaluator
-python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. sudoku-design-evaluator.proto
+python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 popd
 
 pushd orchestrator
-python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. orchestrator.proto
+python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 popd
 

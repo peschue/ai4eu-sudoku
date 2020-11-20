@@ -10,9 +10,13 @@ Without conda, all packages except `clingo` can be installed with `pip`. For `cl
 
 # Starting and Testing
 
-If you edited any `.proto` file, run `./rebuild-all-protobufs.sh`.
+If you just cloned the repo or checked out a new version or edited any `.proto` file:
+
+* run `./populate-duplicate-protobufs.sh`
+* run `./rebuild-all-protobufs.sh`
 
 You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from other components.
+This section shows how to run each component and test it.
 The next section describes how to run the whole pipeline using an orchestrator.
 
 ## Individual start of each docker container and testing
@@ -82,6 +86,7 @@ The next section describes how to run the whole pipeline using an orchestrator.
 # Running the whole pipeline
 
 ```
+$ ./populate-duplicate-protobufs.sh
 $ ./docker-build-all.sh
 $ ./docker-run-all-detached.sh
 $ ./docker-list-containers.sh
@@ -91,7 +96,16 @@ You should see a list of three containers, all in status "Up" with ports 8000-80
 
 In a new browser window open http://localhost:8000/ and you should see a Sudoku grid.
 
-TODO explain how to run orchestrator
+To run the orchestrator:
+
+```
+$ cd orchestrator
+$ python3 orchestrator.py
+```
+
+You should see a request. Changing fields in the GUI should create requests in the orchestrator and in the docker containers.
+
+You can see a `tail -f` to a docker container log with `docker logs <containerid> -f` where `<containerid>` is the hash from `./docker-list-containers.sh`.
 
 # Protobuf Issues
 

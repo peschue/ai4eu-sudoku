@@ -1,28 +1,11 @@
 syntax = "proto3";
 
+package sudoku_gui;
+
+import "sudoku-design-evaluator.proto";
+
 message SudokuDesignEvaluationRequest {
   int64 version = 1;
-}
-
-message SudokuDesignEvaluationJob {
-  // 0 means empty, 1-9 means the respective digit is in that field
-  // addressing is as follows: field[column+9*row]
-  // this field always has 81 elements
-  repeated int32 field = 1;
-}
-
-message SudokuDesignEvaluationResult {
-  // 0 = no solution
-  // 1 = unique solution
-  // 2 = multiple solutions
-  int32 status = 1;
-
-  // encoding as SudokuDesignEvaluationJob.field, present only if status = 1, all values are set to != 0
-  repeated int32 solution = 2;
-
-  // encoding as SudokuDesignEvaluationJob.field, present only if status = 0
-  // those field values which are involved in some way in an inconsistency and need to be considered for modification are set, all others are 0
-  repeated int32 inconsistency_involved = 3;
 }
 
 message Empty {
@@ -30,9 +13,9 @@ message Empty {
 }
 
 service SudokuDesignEvaluationRequestDataBroker {
-  rpc requestSudokuEvaluation(SudokuDesignEvaluationRequest) returns(SudokuDesignEvaluationJob);
+  rpc requestSudokuEvaluation(SudokuDesignEvaluationRequest) returns(sudoku_design_evaluator.SudokuDesignEvaluationJob);
 }
 
 service SudokuDesignEvaluationResultProcessor {
-  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
+  rpc processEvaluationResult(sudoku_design_evaluator.SudokuDesignEvaluationResult) returns(Empty);
 }

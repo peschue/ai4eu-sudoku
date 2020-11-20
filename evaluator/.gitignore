@@ -1,3 +1,6 @@
+# copied to here from another directory (see ../populate-duplicate-protobufs.sh)
+asp.proto
+
 # built by protobuf compiler
-sudoku_design_evaluator_pb2_grpc.py
-sudoku_design_evaluator_pb2.py
+*_pb2.py
+*_pb2_grpc.py

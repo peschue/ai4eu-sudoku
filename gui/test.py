@@ -5,8 +5,8 @@ import grpc
 import sys
 import json
 
-import sudoku_gui_pb2_grpc
 import sudoku_gui_pb2
+import sudoku_gui_pb2_grpc
 
 configfile = "config.json"
 config = json.load(open(configfile, 'rt'))

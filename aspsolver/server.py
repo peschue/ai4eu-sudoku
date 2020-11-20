@@ -6,8 +6,8 @@ import grpc
 import concurrent.futures
 import sys
 
-import asp_pb2_grpc
 import asp_pb2
+import asp_pb2_grpc
 
 # this is the ASP solver! (e.g., conda install clingo)
 import clingo

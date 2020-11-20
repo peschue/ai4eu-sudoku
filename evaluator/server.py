@@ -7,8 +7,9 @@ import re
 import sys
 import time
 
-import sudoku_design_evaluator_pb2_grpc
+import asp_pb2
 import sudoku_design_evaluator_pb2
+import sudoku_design_evaluator_pb2_grpc
 
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
@@ -76,7 +77,7 @@ class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_p
         #logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
         facts = '\n'.join(facts)
 
-        ret = sudoku_design_evaluator_pb2.SolverJob()
+        ret = asp_pb2.SolverJob()
         ret.parameters.number_of_answers = 2 # at least 2, but we can use higher numbers.
         ret.program = self.encoding + facts
         return ret

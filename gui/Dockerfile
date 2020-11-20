@@ -20,13 +20,13 @@ RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r /requir
 # copy sources
 RUN mkdir /app
 RUN mkdir /app/templates
-COPY gui.css gui.js config.json sudoku-gui.proto server.py /app/
+COPY gui.css gui.js config.json asp.proto sudoku-design-evaluator.proto sudoku-gui.proto server.py /app/
 COPY templates/* /app/templates/
 
 WORKDIR /app
 
 # compile protobuf
-RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. sudoku-gui.proto
+RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 
 # tell docker that this container has 2 ports active: webserver (8000) and grpc server (8001)
 EXPOSE 8000 8001

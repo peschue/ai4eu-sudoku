@@ -15,12 +15,12 @@ RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r /requir
 
 # copy sources
 RUN mkdir /app
-COPY config.json sudoku-design-evaluator.proto server.py /app/
+COPY config.json asp.proto sudoku-design-evaluator.proto server.py /app/
 
 WORKDIR /app
 
 # compile protobuf
-RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. sudoku-design-evaluator.proto
+RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 
 # tell docker that this container has port 8002 active
 EXPOSE 8002

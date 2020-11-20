@@ -1,6 +1,7 @@
 # copied to here from another directory (see ../populate-duplicate-protobufs.sh)
 asp.proto
 sudoku-design-evaluator.proto
+sudoku-gui.proto
 
 # built by protobuf compiler
 *_pb2.py
