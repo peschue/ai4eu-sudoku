@@ -2,6 +2,70 @@
 
 PoC for a Sudoku design assistant based on ASP, gRPC, and Protobuf, deployable in AI4EU Experiments.
 
+# Prerequisites
+
+The easiest is to use conda and the script `./create-conda-environment.sh` which creates an environment called `ai4eusudoku` that contains all required prerequisites.
+
+Without conda, all packages except `clingo` can be installed with `pip`. For `clingo` see the build instructions in `./aspsolver/Dockerfile`.
+
+# Starting and Testing
+
+If you edited any `.proto` file, run `./rebuild-all-protobufs.sh`.
+
+## Individual start of each docker container and testing
+
+* GUI
+
+  In some terminal:
+
+  ```
+  $ cd gui/
+  $ ./docker-build.sh
+  $ ./docker-run-interactive.sh
+  ```
+
+  In a new browser window open http://localhost:8000/
+
+  You should see a Sudoku grid and some requests in the terminal.
+
+  In another terminal:
+
+  ```
+  $ cd gui/
+  $ ./test.py
+  ```
+
+  The Sudoku grid in the browser should show "Click on a cell to change. Sudoku has a unique solution" and there should be a digit in each cell of the grid next to the question mark symbols.
+
+* ASP Solver
+
+  In some terminal:
+
+  ```
+  $ cd aspsolver/
+  $ ./docker-build.sh
+  $ ./docker-run-interactive.sh
+  ```
+
+  In another terminal:
+
+  ```
+  $ cd aspsolver/
+  $ ./test.py
+  ```
+
+  You should see in the first terminal that the request arrived and was handled.
+
+# Protobuf Issues
+
+We have 4 protobuf files.
+
+3 protobuf files for components.
+1 protobuf file for the orchestrator.
+
+We only need the orchestrator protobuf file, because otherwise we will get name clashes because certain classes are defined in multiple compilation units.
+The orchestrator file contains all definitions of all components, but each definition only once.
+
 # Representation
 
 The Sudoku field is represented as follows:

@@ -105,7 +105,8 @@ grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
 sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationRequestDataBrokerServicer_to_server(GRPCRequestDataBroker(js_to_protobuf_queue), grpcserver)
 sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationResultProcessorServicer_to_server(GRPCResultProcessor(protobuf_to_js_queue), grpcserver)
 grpcport = config['grpcport']
-grpcserver.add_insecure_port('localhost:'+str(grpcport))
+# listen on all interfaces (otherwise docker cannot export)
+grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))
 logging.info("starting grpc server at port %d", grpcport)
 grpcserver.start()
 

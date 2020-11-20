@@ -5,17 +5,16 @@ import grpc
 import sys
 import json
 
-sys.path.append('../protobuf/')
 import sudoku_gui_pb2_grpc
 import sudoku_gui_pb2
 
-configfile = "../config.json"
+configfile = "config.json"
 config = json.load(open(configfile, 'rt'))
 
 logging.basicConfig(level=logging.INFO)
 
 def main():
-   channel = grpc.insecure_channel('localhost:'+str(config['gui-grpcport']))
+   channel = grpc.insecure_channel('localhost:'+str(config['grpcport']))
    stub = sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProcessorStub(channel)
 
    result = sudoku_gui_pb2.SudokuDesignEvaluationResult()

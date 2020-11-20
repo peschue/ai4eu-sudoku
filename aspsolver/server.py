@@ -6,7 +6,6 @@ import grpc
 import concurrent.futures
 import sys
 
-sys.path.append('../protobuf/')
 import asp_pb2_grpc
 import asp_pb2
 
@@ -44,13 +43,14 @@ class GRPCOneshotSolverServicer(asp_pb2_grpc.OneshotSolverServicer):
         logging.info("finished: %d answers", len(ret.answers))
         return ret
 
-configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
+configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
 asp_pb2_grpc.add_OneshotSolverServicer_to_server(GRPCOneshotSolverServicer(), grpcserver)
-grpcport = config['aspsolver-grpcport']
-grpcserver.add_insecure_port('localhost:'+str(grpcport))
+grpcport = config['grpcport']
+# listen on all interfaces (otherwise docker cannot export)
+grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))
 logging.info("starting grpc server at port %d", grpcport)
 grpcserver.start()
 
