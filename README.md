@@ -19,6 +19,19 @@ You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from
 This section shows how to run each component and test it.
 The next section describes how to run the whole pipeline using an orchestrator.
 
+## Running and Testing without docker
+
+The whole pipeline can run without docker.
+But you need to install all required packages.
+
+* See Section Prerequisites, `conda` might be your friend.
+* See Section Starting and Testing.
+* Each component has a `run-<component>.sh` script that needs to be run in the respective directory.
+* Components must be started before the orchestrator is started, but the order of components does not matter.
+* You will end up with 4 terminals (3 components + orchestrator).
+
+Then, in a new browser window open http://localhost:8000/ and click on the Sudoku Grid and observe the messages in the top window.
+
 ## Individual start of each docker container and testing
 
 * GUI
