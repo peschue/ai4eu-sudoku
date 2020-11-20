@@ -12,6 +12,9 @@ Without conda, all packages except `clingo` can be installed with `pip`. For `cl
 
 If you edited any `.proto` file, run `./rebuild-all-protobufs.sh`.
 
+You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from other components.
+The next section describes how to run the whole pipeline using an orchestrator.
+
 ## Individual start of each docker container and testing
 
 * GUI
@@ -37,6 +40,26 @@ If you edited any `.proto` file, run `./rebuild-all-protobufs.sh`.
 
   The Sudoku grid in the browser should show "Click on a cell to change. Sudoku has a unique solution" and there should be a digit in each cell of the grid next to the question mark symbols.
 
+* Sudoku Evaluator
+
+  In some terminal:
+
+  ```
+  $ cd evaluator/
+  $ ./docker-build.sh
+  $ ./docker-run-interactive.sh
+  ```
+
+  In another terminal:
+
+  ```
+  $ cd evaluator/
+  $ ./test.py
+  ```
+
+  You should see in the first terminal that the request arrived and was handled.
+  You should see an ASP Program in the response in the second terminal.
+
 * ASP Solver
 
   In some terminal:
@@ -55,6 +78,20 @@ If you edited any `.proto` file, run `./rebuild-all-protobufs.sh`.
   ```
 
   You should see in the first terminal that the request arrived and was handled.
+
+# Running the whole pipeline
+
+```
+$ ./docker-build-all.sh
+$ ./docker-run-all-detached.sh
+$ ./docker-list-containers.sh
+```
+
+You should see a list of three containers, all in status "Up" with ports 8000-8003 exported.
+
+In a new browser window open http://localhost:8000/ and you should see a Sudoku grid.
+
+TODO explain how to run orchestrator
 
 # Protobuf Issues
 

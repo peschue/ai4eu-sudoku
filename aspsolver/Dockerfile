@@ -48,8 +48,8 @@ WORKDIR /app
 # compile protobuf
 RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. asp.proto
 
-# tell docker that this container has 2 ports active: webserver (8000) and grpc server (8001)
+# tell docker that this container has port 8003 active
 EXPOSE 8003
 
-# run server with default Python log level "debug"
+# run server
 CMD python3 server.py

@@ -7,7 +7,6 @@ import re
 import sys
 import time
 
-sys.path.append('../protobuf/')
 import sudoku_design_evaluator_pb2_grpc
 import sudoku_design_evaluator_pb2
 
@@ -73,7 +72,8 @@ class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_p
             for y in range(0,9)
             if request.field[x+9*y] > 0
         ]
-        logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
+        # the following is for seeing part of the set of facts for debugging, if required
+        #logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
         facts = '\n'.join(facts)
 
         ret = sudoku_design_evaluator_pb2.SolverJob()
@@ -158,7 +158,7 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
         logging.info("returning status %d, solution with %d nonzeroelements and inconsistency_involved with %d nonzero elements", ret.status, count_nonzero(ret.solution), count_nonzero(ret.inconsistency_involved))
         return ret
 
-configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
+configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 grpcserver = grpc.server(
@@ -174,8 +174,9 @@ grpcserver = grpc.server(
 )
 sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationProblemEncoderServicer_to_server(GRPCSudokuDesignEvaluationProblemEncoderServicer(), grpcserver)
 sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationResultDecoderServicer_to_server(GRPCSudokuDesignEvaluationResultDecoderServicer(), grpcserver)
-grpcport = config['designevaluator-grpcport']
-grpcserver.add_insecure_port('localhost:'+str(grpcport))
+grpcport = config['grpcport']
+# listen on all interfaces (otherwise docker cannot export)
+grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))
 logging.info("starting grpc server at port %d", grpcport)
 grpcserver.start()
 
