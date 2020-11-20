@@ -12,13 +12,10 @@ import concurrent.futures
 import sys
 import traceback
 
-sys.path.append('../protobuf/')
 import sudoku_gui_pb2_grpc
 import sudoku_gui_pb2
 
-logger = logging.getLogger(__name__)
-# set logging level in uvicorn!
-logging.basicConfig(level=logging.INFO)
+# set Python logging level when starting uvicorn!
 
 class FieldSpec(pydantic.BaseModel):
 
@@ -87,7 +84,6 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
 def create_app() -> fastapi.FastAPI:
 
     app = fastapi.FastAPI(title='SudokuGUIServer', debug=True)
-    app.logger = logger
     return app
 
 app = create_app()
@@ -98,7 +94,7 @@ def reset_field():
     field = {}
 
 
-configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "../config.json"
+configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 protobuf_to_js_queue = queue.Queue()
@@ -108,7 +104,7 @@ templates = fastapi.templating.Jinja2Templates(directory='templates')
 grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
 sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationRequestDataBrokerServicer_to_server(GRPCRequestDataBroker(js_to_protobuf_queue), grpcserver)
 sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationResultProcessorServicer_to_server(GRPCResultProcessor(protobuf_to_js_queue), grpcserver)
-grpcport = config['gui-grpcport']
+grpcport = config['grpcport']
 grpcserver.add_insecure_port('localhost:'+str(grpcport))
 logging.info("starting grpc server at port %d", grpcport)
 grpcserver.start()
