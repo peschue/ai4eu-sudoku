@@ -5,7 +5,7 @@ import grpc
 import sys
 import json
 
-import sudoku_gui_pb2
+import sudoku_design_evaluator_pb2
 import sudoku_gui_pb2_grpc
 
 configfile = "config.json"
@@ -17,7 +17,7 @@ def main():
    channel = grpc.insecure_channel('localhost:'+str(config['grpcport']))
    stub = sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProcessorStub(channel)
 
-   result = sudoku_gui_pb2.SudokuDesignEvaluationResult()
+   result = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
 
    # example: unique solution
    result.status = 1
