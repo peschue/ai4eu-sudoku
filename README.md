@@ -8,6 +8,8 @@ The easiest is to use conda and the script `./create-conda-environment.sh` which
 
 Without conda, all packages except `clingo` can be installed with `pip`. For `clingo` see the build instructions in `./aspsolver/Dockerfile`.
 
+If you use conda (and generated the environment as indicated above) then, before doing anything mentioned below, you need to run `conda activate ai4eusudoku` in the shell where you run one of the scripts below.
+
 # Starting and Testing
 
 If you just cloned the repo or checked out a new version or edited any `.proto` file:
