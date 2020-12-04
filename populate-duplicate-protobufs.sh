@@ -13,3 +13,5 @@ cp evaluator/sudoku-design-evaluator.proto gui/
 cp evaluator/sudoku-design-evaluator.proto orchestrator/
 
 cp gui/sudoku-gui.proto orchestrator/
+
+set +ex
