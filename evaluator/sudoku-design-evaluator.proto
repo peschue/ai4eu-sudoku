@@ -12,10 +12,12 @@ message SudokuDesignEvaluationJob {
 }
 
 message SudokuDesignEvaluationResult {
-  // 0 = no solution
-  // 1 = unique solution
-  // 2 = multiple solutions
-  int32 status = 1;
+  enum SolStatus {
+    NO_SOLUTION = 0;
+    UNIQUE_SOLUTION = 1;
+    MULTIPLE_SOLUTIONS = 2;
+  }
+  SolStatus status = 1;
 
   // encoding as SudokuDesignEvaluationJob.field, present only if status = 1, all values are set to != 0
   repeated int32 solution = 2;
