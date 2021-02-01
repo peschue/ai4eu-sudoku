@@ -16,6 +16,9 @@ import sudoku_design_evaluator_pb2
 import sudoku_gui_pb2
 import sudoku_gui_pb2_grpc
 
+# shortcut
+SDER = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult
+
 logger  = logging.getLogger(__name__)
 # the next line sets logging level for things outside uvicorn, that means for the gRPC server
 # set Python logging level for uvicorn when starting uvicorn!
@@ -61,18 +64,18 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
 
         # pass this to javascript to send it to the GUI
         statusstr = {
-            0: 'Sudoku has no solution',
-            1: 'Sudoku has a unique solution',
-            2: 'Sudoku has multiple solutions'
+            SDER.NO_SOLUTION: 'Sudoku has no solution',
+            SDER.UNIQUE_SOLUTION: 'Sudoku has a unique solution',
+            SDER.MULTIPLE_SOLUTIONS: 'Sudoku has multiple solutions'
         }[request.status]
         fields = []
-        if request.status in [1,2]:
+        if request.status in [SDER.UNIQUE_SOLUTION, SDER.MULTIPLE_SOLUTIONS]:
             for row in range(0,9):
                 for col in range(0,9):
                     v = request.solution[col+9*row]
                     if v != 0:
                         fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='solution'))
-        elif request.status == 0:
+        elif request.status == SDER.NO_SOLUTION:
             for row in range(0,9):
                 for col in range(0,9):
                     v = request.inconsistency_involved[col+9*row]
