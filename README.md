@@ -125,6 +125,12 @@ You should see a request. Changing fields in the GUI should create requests in t
 
 You can see a `tail -f` to a docker container log with `docker logs <containerid> -f` where `<containerid>` is the hash from `./docker-list-containers.sh`.
 
+# Deploying to Acumos
+
+Decide on which docker registry you want to host the images. Setup the URI and port in variable `REMOTE_REPO`, e.g., `export REMOTE_REPO=cicd.ai4eu-dev.eu:7444`.
+Log in to the registry with `docker login <URI>`.
+Run `./docker-push-all-to-registry.sh`. If it fails, retrying can help. Maybe multiple times.
+
 # Protobuf Issues
 
 We have 4 protobuf files.
