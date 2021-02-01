@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t ai4eu-sudoku-aspsolver:1.0 .
+docker build -t ai4eu-sudoku-aspsolver:$ASPSOLVER_IMAGE_VERSION .

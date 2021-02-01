@@ -100,7 +100,10 @@ Then, in a new browser window open http://localhost:8000/ and click on the Sudok
 
 # Running the whole pipeline
 
+In the following, the first script is included in this shell, the others are executed in a subshell!
+
 ```
+$ . versions.sh
 $ ./populate-duplicate-protobufs.sh
 $ ./docker-build-all.sh
 $ ./docker-run-all-detached.sh
