@@ -26,15 +26,7 @@ message SudokuDesignEvaluationResult {
   repeated int32 inconsistency_involved = 3;
 }
 
-message SudokuDesignEvaluationRequest {
-  int64 version = 1;
-}
-
-message Empty {
-  int64 empty = 1;
-}
-
 service SudokuGUI {
-  rpc requestSudokuEvaluation(SudokuDesignEvaluationRequest) returns(SudokuDesignEvaluationJob);
-  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
+  rpc requestSudokuEvaluation(google.protobuf.Empty) returns(SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(google.protobuf.Empty);
 }

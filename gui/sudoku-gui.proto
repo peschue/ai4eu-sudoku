@@ -13,9 +13,6 @@ message Empty {
 }
 
 service SudokuDesignEvaluationRequestDataBroker {
-  rpc requestSudokuEvaluation(SudokuDesignEvaluationRequest) returns(sudoku_design_evaluator.SudokuDesignEvaluationJob);
-}
-
-service SudokuDesignEvaluationResultProcessor {
-  rpc processEvaluationResult(sudoku_design_evaluator.SudokuDesignEvaluationResult) returns(Empty);
+  rpc requestSudokuEvaluation(google.protobuf.Empty) returns(sudoku_design_evaluator.SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(sudoku_design_evaluator.SudokuDesignEvaluationResult) returns(google.protobuf.Empty);
 }

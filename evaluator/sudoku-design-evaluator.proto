@@ -29,8 +29,5 @@ message SudokuDesignEvaluationResult {
 
 service SudokuDesignEvaluationProblemEncoder {
   rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (asp.SolverJob);
-}
-
-service SudokuDesignEvaluationResultDecoder {
-  rpc processEvaluationResult(asp.SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
+  rpc processSolverResult(asp.SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
 }

@@ -65,5 +65,5 @@ message SudokuDesignEvaluationResult {
 
 service SudokuDesignEvaluator {
   rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (SolverJob);
-  rpc processEvaluationResult(SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
+  rpc processSolverResult(SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
 }
