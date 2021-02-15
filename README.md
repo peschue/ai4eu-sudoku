@@ -127,9 +127,29 @@ You can see a `tail -f` to a docker container log with `docker logs <containerid
 
 # Deploying to Acumos
 
+## Docker Images
+
 Decide on which docker registry you want to host the images. Setup the URI and port in variable `REMOTE_REPO`, e.g., `export REMOTE_REPO=cicd.ai4eu-dev.eu:7444`.
 Log in to the registry with `docker login <URI>`.
 Run `./docker-push-all-to-registry.sh`. If it fails, retrying can help. Maybe multiple times.
+
+## Register components in Acumos
+
+Login to Acumos and use "On-boarding Model" menu item and there "On-board dockerized Model URI".
+
+You extract host and port from the `REMOTE_REPO` where you pushed your images (see above).
+
+Images are
+
+* `tutorials/sudoku/ai4eu-sudoku-gui`
+* `tutorials/sudoku/ai4eu-sudoku-designevaluator`
+* `tutorials/sudoku/ai4eu-sudoku-aspsolver`
+
+Tags are defined in `versions.sh`.
+
+The protobuf files to upload are in directory `acumos/`.
+
+Finally, once the model is "on-boarded" the category needs to be set in "My Models" -> select model -> "Manage Model" -> "Publish to Marketplace" -> "Model Category". (You can ignore error message about author name, you can choose "Data Transformer" and "Scikit-learn" for all models.)
 
 # Protobuf Issues
 
