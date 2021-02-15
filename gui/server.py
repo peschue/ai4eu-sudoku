@@ -12,6 +12,7 @@ import concurrent.futures
 import sys
 import traceback
 
+import google.protobuf.empty_pb2
 import sudoku_design_evaluator_pb2
 import sudoku_gui_pb2
 import sudoku_gui_pb2_grpc
@@ -37,9 +38,10 @@ class GUIUpdate(pydantic.BaseModel):
     field: List[FieldSpec]
 
 
-class GRPCRequestDataBroker(sudoku_gui_pb2_grpc.SudokuDesignEvaluationRequestDataBrokerServicer):
-    def __init__(self, to_protobuf_queue):
+class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
+    def __init__(self, to_protobuf_queue, to_js_queue):
         self.to_protobuf_queue = to_protobuf_queue
+        self.to_js_queue = to_js_queue
 
     def requestSudokuEvaluation(self, request, context):
         logging.info("requesting sudoku evaluation")
@@ -54,10 +56,6 @@ class GRPCRequestDataBroker(sudoku_gui_pb2_grpc.SudokuDesignEvaluationRequestDat
             pass
 
         return ret
-
-class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProcessorServicer):
-    def __init__(self, to_js_queue):
-        self.to_js_queue = to_js_queue
 
     def processEvaluationResult(self, request, context):
         logging.info("received evaluation result with status %d and solution of size %d", request.status, len(request.solution))
@@ -86,7 +84,7 @@ class GRPCResultProcessor(sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProces
         self.to_js_queue.put(gu)
 
         # dummy return
-        return sudoku_gui_pb2.Empty(empty=0)
+        return google.protobuf.empty_pb2.Empty()
 
 
 app = fastapi.FastAPI(title='SudokuGUIServer', debug=True)
@@ -106,8 +104,7 @@ js_to_protobuf_queue = queue.Queue()
 templates = fastapi.templating.Jinja2Templates(directory='templates')
 
 grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
-sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationRequestDataBrokerServicer_to_server(GRPCRequestDataBroker(js_to_protobuf_queue), grpcserver)
-sudoku_gui_pb2_grpc.add_SudokuDesignEvaluationResultProcessorServicer_to_server(GRPCResultProcessor(protobuf_to_js_queue), grpcserver)
+sudoku_gui_pb2_grpc.add_SudokuGUIServicer_to_server(SudokuGUIServicerImpl(js_to_protobuf_queue, protobuf_to_js_queue), grpcserver)
 grpcport = config['grpcport']
 # listen on all interfaces (otherwise docker cannot export)
 grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))

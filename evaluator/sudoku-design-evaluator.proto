@@ -27,7 +27,7 @@ message SudokuDesignEvaluationResult {
   repeated int32 inconsistency_involved = 3;
 }
 
-service SudokuDesignEvaluationProblemEncoder {
+service SudokuDesignEvaluator {
   rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (asp.SolverJob);
   rpc processSolverResult(asp.SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
 }

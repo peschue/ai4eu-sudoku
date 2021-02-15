@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
 
-class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluationProblemEncoderServicer):
+class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluatorServicer):
     def __init__(self):
         self.encoding = '''
             % Adapted from an example by Hakan Kjellerstrand, hakank@gmail.com
@@ -85,11 +85,7 @@ class GRPCSudokuDesignEvaluationProblemEncoderServicer(sudoku_design_evaluator_p
         ret.program = self.encoding + facts
         return ret
 
-class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluationResultDecoderServicer):
-    def __init__(self):
-        pass
-
-    def processEvaluationResult(self, request, context):
+    def processSolverResult(self, request, context):
         answers = [
             {
                 'y': [ a for a in ans.atoms if a.startswith('y') ],
@@ -97,8 +93,8 @@ class GRPCSudokuDesignEvaluationResultDecoderServicer(sudoku_design_evaluator_pb
             }
             for ans in request.answers
         ]
-        logging.info("processEvaluationResult request with %s atoms in respective answer sets", [ { k : len(v) for k, v in answer.items() } for answer in answers ])
-        #logging.warning("processEvaluationResult filtered atoms[0] %s", [ f for f in request.answers[0].atoms if re.match(r'y\([12],[12],.\)', f) ])
+        logging.info("processSolverResult request with %s atoms in respective answer sets", [ { k : len(v) for k, v in answer.items() } for answer in answers ])
+        #logging.warning("processSolverResult filtered atoms[0] %s", [ f for f in request.answers[0].atoms if re.match(r'y\([12],[12],.\)', f) ])
 
         ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
 
@@ -176,8 +172,7 @@ grpcserver = grpc.server(
         ('grpc.http2.min_ping_interval_without_data_ms', 5000), # allow pings without data every 5 seconds
     )
 )
-sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationProblemEncoderServicer_to_server(GRPCSudokuDesignEvaluationProblemEncoderServicer(), grpcserver)
-sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluationResultDecoderServicer_to_server(GRPCSudokuDesignEvaluationResultDecoderServicer(), grpcserver)
+sudoku_design_evaluator_pb2_grpc.add_SudokuDesignEvaluatorServicer_to_server(SudokuDesignEvaluatorServicerImpl(), grpcserver)
 grpcport = config['grpcport']
 # listen on all interfaces (otherwise docker cannot export)
 grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))

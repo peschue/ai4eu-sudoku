@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package sudoku_gui;
 
+import "google/protobuf/empty.proto";
 
 message SudokuDesignEvaluationJob {
   // 0 means empty, 1-9 means the respective digit is in that field
