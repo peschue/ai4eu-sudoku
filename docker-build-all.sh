@@ -3,7 +3,7 @@
 set -ex
 
 if test "x$GUI_IMAGE_VERSION" == "x"; then
-	echo "variable GUI_IMAGE_VERSION is empty, PLEASE RUN ./versions.sh!"
+	echo "variable GUI_IMAGE_VERSION is empty, PLEASE RUN 'source versions.sh'"
 	exit -1
 fi
 
