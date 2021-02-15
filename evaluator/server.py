@@ -11,9 +11,6 @@ import asp_pb2
 import sudoku_design_evaluator_pb2
 import sudoku_design_evaluator_pb2_grpc
 
-# shortcut
-SDER = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult
-
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
@@ -101,15 +98,15 @@ class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuD
         if all([ len(a['omit']) == 0 for a in answers ]):
             if len(answers) == 1:
                 # unique solution
-                ret.status = SDER.UNIQUE_SOLUTION
+                ret.status = 1
             else:
                 # more than one solution
-                ret.status = SDER.MULTIPLE_SOLUTIONS
+                ret.status = 2
         else:
             # no solution
-            ret.status = SDER.NO_SOLUTION
+            ret.status = 0
 
-        if ret.status in [SDER.UNIQUE_SOLUTION, SDER.MULTIPLE_SOLUTIONS]:
+        if ret.status in [1,2]:
             # encode the consistent sudoku solutions
             # compute the intersection of all solutions
             
