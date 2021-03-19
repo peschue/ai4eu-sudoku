@@ -14,8 +14,8 @@ If you use conda (and generated the environment as indicated above) then, before
 
 If you just cloned the repo or checked out a new version or edited any `.proto` file:
 
-* run `./populate-duplicate-protobufs.sh`
-* run `./rebuild-all-protobufs.sh`
+* run `./helper.py populate-protobufs`
+* run `./helper.py build-protobufs`
 
 You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from other components.
 This section shows how to run each component and test it.
@@ -41,8 +41,7 @@ Then, in a new browser window open http://localhost:8000/ and click on the Sudok
   In some terminal:
 
   ```
-  $ cd gui/
-  $ ./docker-build.sh
+  $ ./helper.py build gui
   $ ./docker-run-interactive.sh
   ```
 
@@ -64,8 +63,7 @@ Then, in a new browser window open http://localhost:8000/ and click on the Sudok
   In some terminal:
 
   ```
-  $ cd evaluator/
-  $ ./docker-build.sh
+  $ ./helper.py build evaluator
   $ ./docker-run-interactive.sh
   ```
 
@@ -84,8 +82,7 @@ Then, in a new browser window open http://localhost:8000/ and click on the Sudok
   In some terminal:
 
   ```
-  $ cd aspsolver/
-  $ ./docker-build.sh
+  $ ./helper.py build aspsolver
   $ ./docker-run-interactive.sh
   ```
 
@@ -103,11 +100,10 @@ Then, in a new browser window open http://localhost:8000/ and click on the Sudok
 In the following, the first script is included in this shell, the others are executed in a subshell!
 
 ```
-$ . versions.sh
-$ ./populate-duplicate-protobufs.sh
-$ ./docker-build-all.sh
-$ ./docker-run-all-detached.sh
-$ ./docker-list-containers.sh
+$ ./helper.py populate-protobufs
+$ ./helper.py build
+$ ./helper.py run detached
+$ ./helper.py list
 ```
 
 You should see a list of three containers, all in status "Up" with ports 8000-8003 exported.
@@ -125,13 +121,40 @@ You should see a request. Changing fields in the GUI should create requests in t
 
 You can see a `tail -f` to a docker container log with `docker logs <containerid> -f` where `<containerid>` is the hash from `./docker-list-containers.sh`.
 
-# Deploying to Acumos
+# Running Sudoku using Acumos
 
-## Docker Images
+## Onboarding
+
+First we onboarding three components to Acumos (Gui, Evaluator, ASP Solver).
+
+These components are all built from this repository and first need to be uploaded to a docker registry (see also below).
+
+To build the docker images and upload them to the registry, the workflow is as follows.
+
+* configure REMOTE_REPO in `./helper.py`.
+* login to the remote repo with `docker login <your REMOTE_REPO>`
+* run the following - the missing `/` in the first line is intentional!
+
+```
+$ ./helper.py populate-protobufs
+$ ./helper.py build
+$ ./helper.py tag-and-push
+```
+
+To onboard the components to Acumos we upload the respective protobuf files (all in directory `acumos/`) and provide the link to the docker image in the registry.
+
+Examples:
+
+* protobuf file (press upload!): acumos/asp.proto
+* registry: TODO
+* tag: TODO
+
+
+## Docker Registries and Images
 
 Decide on which docker registry you want to host the images. Setup the URI and port in variable `REMOTE_REPO`, e.g., `export REMOTE_REPO=cicd.ai4eu-dev.eu:7444`.
 Log in to the registry with `docker login <URI>`.
-Run `./docker-push-all-to-registry.sh`. If it fails, retrying can help. Maybe multiple times.
+Run `./helper.py tag-and-push`. If it fails, retrying can help. Maybe multiple times.
 
 ## Register components in Acumos
 
@@ -139,29 +162,41 @@ Login to Acumos and use "On-boarding Model" menu item and there "On-board docker
 
 You extract host and port from the `REMOTE_REPO` where you pushed your images (see above).
 
-Images are
+Images are tagged as
 
-* `tutorials/sudoku/ai4eu-sudoku-gui`
-* `tutorials/sudoku/ai4eu-sudoku-designevaluator`
-* `tutorials/sudoku/ai4eu-sudoku-aspsolver`
+* `gui-<version>`
+* `evaluator-<version>`
+* `aspsolver-<version>`
 
-Tags are defined in `versions.sh`.
+Versions are defined in the top of `helper.py`.
 
 The protobuf files to upload are in directory `acumos/`.
 
 Finally, once the model is "on-boarded" the category needs to be set in "My Models" -> select model -> "Manage Model" -> "Publish to Marketplace" -> "Model Category". (You can ignore error message about author name, you can choose "Data Transformer" and "Scikit-learn" for all models.)
 
-# Protobuf Issues
+# Development Documentation
 
-We have 4 protobuf files.
+## Protobuf Files
 
-3 protobuf files for components.
-1 protobuf file for the orchestrator.
+We have 6 protobuf files.
 
-We only need the orchestrator protobuf file, because otherwise we will get name clashes because certain classes are defined in multiple compilation units.
-The orchestrator file contains all definitions of all components, but each definition only once.
+* 3 protobuf files used within components, they use `import` statement to avoid code duplication.
 
-# Representation
+  The script `./helper.py populate-protobufs` manages these files, they must be copied to ecah subdirectory where they are used because of safety restrictions of docker.
+
+  The files that you should hand-edit are:
+
+  * `aspsolver/asp.proto`
+  * `evaluator/sudoku-design-evaluator.proto`
+  * `gui/sudoku-gui.proto`
+
+* 3 protobuf files to be uploaded to Acumos (it currently does not support `import`).
+
+  They are in directory `acumos/`.
+
+WP3 is working on improving this situation so that only one version of each protobuf file is required.
+
+## Representation
 
 The Sudoku field is represented as follows:
 
