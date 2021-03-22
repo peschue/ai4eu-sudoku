@@ -23,7 +23,7 @@ WORKDIR /app
 RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 
 # tell docker that this container has port 8002 active
-EXPOSE 8002
+EXPOSE 8061
 
 # run server
 CMD python3 server.py

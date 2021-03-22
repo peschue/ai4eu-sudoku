@@ -123,11 +123,11 @@ You can see a `tail -f` to a docker container log with `docker logs <containerid
 
 # Running Sudoku using Acumos
 
-## Onboarding
-
 First we onboarding three components to Acumos (Gui, Evaluator, ASP Solver).
 
-These components are all built from this repository and first need to be uploaded to a docker registry (see also below).
+These components are all built from this repository and first need to be uploaded to a docker registry.
+
+## Pushing Images to a Container Registry
 
 To build the docker images and upload them to the registry, the workflow is as follows.
 
@@ -140,15 +140,6 @@ $ ./helper.py populate-protobufs
 $ ./helper.py build
 $ ./helper.py tag-and-push
 ```
-
-To onboard the components to Acumos we upload the respective protobuf files (all in directory `acumos/`) and provide the link to the docker image in the registry.
-
-Examples:
-
-* protobuf file (press upload!): acumos/asp.proto
-* registry: TODO
-* tag: TODO
-
 
 ## Docker Registries and Images
 
@@ -172,7 +163,25 @@ Versions are defined in the top of `helper.py`.
 
 The protobuf files to upload are in directory `acumos/`.
 
+For example to onboard the ASP Solver:
+
+* registry: cicd.ai4eu-dev.eu
+* port: 7444
+* image: sudoku/ai4eu
+* tag: aspsolver-1.0
+* protobuf file (press upload!): acumos/asp.proto
+
 Finally, once the model is "on-boarded" the category needs to be set in "My Models" -> select model -> "Manage Model" -> "Publish to Marketplace" -> "Model Category". (You can ignore error message about author name, you can choose "Data Transformer" and "Scikit-learn" for all models.)
+
+## Assemble, Save, and Validate Solution
+
+See the video.
+
+## Download Solution Package
+
+See the video.
+
+## Deploy in a kubernetes environment
 
 # Development Documentation
 

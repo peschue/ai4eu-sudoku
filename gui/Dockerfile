@@ -28,8 +28,7 @@ WORKDIR /app
 # compile protobuf
 RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto
 
-# tell docker that this container has 2 ports active: webserver (8000) and grpc server (8001)
-EXPOSE 8000 8001
+EXPOSE 8061 8062
 
 # run server with default Python log level "debug"
-CMD uvicorn server:app --host 0.0.0.0 --port 8000 --log-level ${PYTHON_LOGLEVEL:-debug}
+CMD uvicorn server:app --host 0.0.0.0 --port 8062 --log-level ${PYTHON_LOGLEVEL:-debug}

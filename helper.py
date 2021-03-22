@@ -24,9 +24,8 @@ METADATA = {
     }
 }
 
-# REMOTE_REPO = 'cidc.ai4eu-dev.eu:7444'
-REMOTE_REPO = 'peterschueller/test'
-# REMOTE_REPO = 'peterschueller/ai4eu-sudoku'
+REMOTE_REPO = 'cicd.ai4eu-dev.eu:7444/tutorials/sudoku'
+# REMOTE_REPO = 'peterschueller/test'
 
 COMPONENTS = ['gui', 'evaluator', 'aspsolver']
 
