@@ -4,122 +4,36 @@ PoC for a Sudoku design assistant based on ASP, gRPC, and Protobuf, deployable i
 
 # Prerequisites
 
+You can run everything manually without docker, but docker is recommended for use with the helper script `helper.py`.
+
 The easiest is to use conda and the script `./create-conda-environment.sh` which creates an environment called `ai4eusudoku` that contains all required prerequisites.
 
 Without conda, all packages except `clingo` can be installed with `pip`. For `clingo` see the build instructions in `./aspsolver/Dockerfile`.
 
 If you use conda (and generated the environment as indicated above) then, before doing anything mentioned below, you need to run `conda activate ai4eusudoku` in the shell where you run one of the scripts below.
 
-# Starting and Testing
+# Running the whole pipeline locally in docker
 
-If you just cloned the repo or checked out a new version or edited any `.proto` file:
-
-* run `./helper.py populate-protobufs`
-* run `./helper.py build-protobufs`
-
-You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from other components.
-This section shows how to run each component and test it.
-The next section describes how to run the whole pipeline using an orchestrator.
-
-## Running and Testing without docker
-
-The whole pipeline can run without docker.
-But you need to install all required packages.
-
-* See Section Prerequisites, `conda` might be your friend.
-* See Section Starting and Testing.
-* Each component has a `run-<component>.sh` script that needs to be run in the respective directory.
-* Components must be started before the orchestrator is started, but the order of components does not matter.
-* You will end up with 4 terminals (3 components + orchestrator).
-
-Then, in a new browser window open http://localhost:8000/ and click on the Sudoku Grid and observe the messages in the top window.
-
-## Individual start of each docker container and testing
-
-* GUI
-
-  In some terminal:
-
-  ```
-  $ ./helper.py build gui
-  $ ./docker-run-interactive.sh
-  ```
-
-  In a new browser window open http://localhost:8000/
-
-  You should see a Sudoku grid and some requests in the terminal.
-
-  In another terminal:
-
-  ```
-  $ cd gui/
-  $ ./test.py
-  ```
-
-  The Sudoku grid in the browser should show "Click on a cell to change. Sudoku has a unique solution" and there should be a digit in each cell of the grid next to the question mark symbols.
-
-* Sudoku Evaluator
-
-  In some terminal:
-
-  ```
-  $ ./helper.py build evaluator
-  $ ./docker-run-interactive.sh
-  ```
-
-  In another terminal:
-
-  ```
-  $ cd evaluator/
-  $ ./test.py
-  ```
-
-  You should see in the first terminal that the request arrived and was handled.
-  You should see an ASP Program in the response in the second terminal.
-
-* ASP Solver
-
-  In some terminal:
-
-  ```
-  $ ./helper.py build aspsolver
-  $ ./docker-run-interactive.sh
-  ```
-
-  In another terminal:
-
-  ```
-  $ cd aspsolver/
-  $ ./test.py
-  ```
-
-  You should see in the first terminal that the request arrived and was handled.
-
-# Running the whole pipeline
-
-In the following, the first script is included in this shell, the others are executed in a subshell!
+The following commands build three docker images, run them, and then start an orchestrator outside of docker.
 
 ```
 $ ./helper.py populate-protobufs
 $ ./helper.py build
 $ ./helper.py run detached
-$ ./helper.py list
+$ ./helper.py orchestrate
+```
+
+You can see the running containers with the command
+
+```
+$ ./helper.py run detached
 ```
 
 You should see a list of three containers, all in status "Up" with ports 8000-8003 exported.
 
 In a new browser window open http://localhost:8000/ and you should see a Sudoku grid.
 
-To run the orchestrator:
-
-```
-$ cd orchestrator
-$ python3 orchestrator.py
-```
-
-You should see a request. Changing fields in the GUI should create requests in the orchestrator and in the docker containers.
-
-You can see a `tail -f` to a docker container log with `docker logs <containerid> -f` where `<containerid>` is the hash from `./docker-list-containers.sh`.
+You can follow the logs of each docker container using `./helper.py follow <component>`, for example `./helper.py follow gui`.
 
 # Running Sudoku using Acumos
 
@@ -184,6 +98,70 @@ See the video.
 ## Deploy in a kubernetes environment
 
 # Development Documentation
+
+You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from other components.
+This section shows how to run each component and test it.
+
+## Individual start of each docker container and testing
+
+* GUI
+
+  In some terminal:
+
+  ```
+  $ ./helper.py build gui
+  $ ./helper.py run interactive gui
+  ```
+
+  In a new browser window open http://localhost:8000/
+
+  You should see a Sudoku grid and some requests in the terminal.
+
+  In another terminal:
+
+  ```
+  $ cd gui/
+  $ ./test.py
+  ```
+
+  The Sudoku grid in the browser should show "Click on a cell to change. Sudoku has a unique solution" and there should be a digit in each cell of the grid next to the question mark symbols.
+
+* Sudoku Evaluator
+
+  In some terminal:
+
+  ```
+  $ ./helper.py build evaluator
+  $ ./helper.py run interactive evaluator
+  ```
+
+  In another terminal:
+
+  ```
+  $ cd evaluator/
+  $ ./test.py
+  ```
+
+  You should see in the first terminal that the request arrived and was handled.
+  You should see an ASP Program in the response in the second terminal.
+
+* ASP Solver
+
+  In some terminal:
+
+  ```
+  $ ./helper.py build aspsolver
+  $ ./helper.py run interactive aspsolver
+  ```
+
+  In another terminal:
+
+  ```
+  $ cd aspsolver/
+  $ ./test.py
+  ```
+
+  You should see in the first terminal that the request arrived and was handled.
 
 ## Protobuf Files
 
