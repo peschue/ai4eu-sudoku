@@ -33,13 +33,20 @@ configfile = "config.json"
 config = json.load(open(configfile, 'rt'))
 
 def main():
-    gui_channel = grpc.insecure_channel('localhost:'+str(config['gui-grpcport']))
+    guiconn = 'localhost:'+str(config['gui-grpcport'])
+    evalconn = 'localhost:'+str(config['designevaluator-grpcport'])
+    aspconn = 'localhost:'+str(config['aspsolver-grpcport'])
+
+    logging.info("connecting to GUI at %s", guiconn)
+    gui_channel = grpc.insecure_channel(guiconn)
     gui_stub = sudoku_gui_pb2_grpc.SudokuGUIStub(gui_channel)
 
-    evaluator_channel = grpc.insecure_channel('localhost:'+str(config['designevaluator-grpcport']))
+    logging.info("connecting to design evaluator at %s", evalconn)
+    evaluator_channel = grpc.insecure_channel(evalconn)
     evaluator_stub = sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluatorStub(evaluator_channel)
 
-    aspsolver_channel = grpc.insecure_channel('localhost:'+str(config['aspsolver-grpcport']))
+    logging.info("connecting to ASP solver at %s", aspconn)
+    aspsolver_channel = grpc.insecure_channel(aspconn)
     aspsolver_stub = asp_pb2_grpc.OneshotSolverStub(aspsolver_channel)
 
     while True:
