@@ -9,18 +9,21 @@ import subprocess
 import sys
 import logging
 
+# we describe each image and which ports need to be redirected to which ports
+# according to the container specification,
+# the gRPC server must run at 8061 and the web gui (if exists) at 8062
 METADATA = {
     'gui': {
         'version': '1.3',
-        'ports': [8000, 8001],
+        'ports': {8061: 8001, 8062: 8000},
     },
     'evaluator': {
         'version': '1.3',
-        'ports': [8002],
+        'ports': {8061: 8002},
     },
     'aspsolver': {
         'version': '1.0',
-        'ports': [8003],
+        'ports': {8061: 8003},
     }
 }
 
@@ -114,8 +117,8 @@ def run(mode, component):
         'comp': component,
         'ver': METADATA[component]['version'],
         'ports': ' '.join([
-            '--publish={p}:{p}'.format(p=port)
-            for port in METADATA[component]['ports']
+            '--publish={ext}:{int}'.format(int=int, ext=ext)
+            for int, ext in METADATA[component]['ports'].items()
         ]),
         'repo': REMOTE_REPO,
         'args': '--rm',  # remove image after run
