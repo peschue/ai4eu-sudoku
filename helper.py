@@ -35,19 +35,29 @@ COMPONENTS = ['gui', 'evaluator', 'aspsolver']
 USAGE = '''
 Helps to build/deploy the Sudoku Acumos example.
 
-Usage:
+Usage for building and pushing to docker registry:
     {self} populate-protobufs
     {self} build-protobufs
-
     {self} build [component]
     {self} tag-and-push [component]
 
+Usage for running locally using docker:
     {self} run {{detached|interactive|shell}} [component]
     {self} kill [component]
+    {self} follow [component]
     {self} list
+    {self} orchestrate
 
 where [component] is one of {comps}
 '''
+
+
+def cmd_info(cmd, cwd=None):
+    if cwd is None:
+        sys.stderr.write("RUNNING %s\n" % cmd)
+    else:
+        sys.stderr.write("IN %s RUNNING %s\n" % (cwd, cmd))
+    sys.stderr.flush()
 
 
 class ShowUsage(Exception):
@@ -67,18 +77,18 @@ def populate_protobufs():
         'cp gui/sudoku-gui.proto orchestrator/',
     ]:
 
-        logging.info(cmd)
+        cmd_info(cmd)
         subprocess.check_call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def build_protobufs():
 
     cmd = 'python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out=. *.proto'
-    logging.info(cmd)
 
     for component in COMPONENTS + ['orchestrator']:
 
         logging.info('running in %s', component)
+        cmd_info(cmd, cwd=component)
         subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
@@ -88,6 +98,7 @@ def build(component):
 
     cmd = "docker build -t ai4eu-sudoku:{}-{} .".format(
         component, METADATA[component]['version'])
+    cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
@@ -101,11 +112,13 @@ def tag_and_push(component):
         'repo': REMOTE_REPO
     }
     cmd = "docker tag ai4eu-sudoku:{comp}-{ver} {repo}:{comp}-{ver}".format(**x)
+    cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
     logging.info("pushing component %s", component)
 
     cmd = "docker push {repo}:{comp}-{ver}".format(**x)
+    cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
@@ -134,12 +147,14 @@ def run(mode, component):
         x['cmd'] = '/bin/bash'
 
     cmd = 'docker run {args} --name ai4eu-sudoku-{comp} {ports} ai4eu-sudoku:{comp}-{ver} {cmd}'.format(**x)
+    cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def kill(component):
 
     cmd = "docker container ls -q --filter name=ai4eu-sudoku-{}".format(component)
+    cmd_info(cmd)
     out = subprocess.check_output(cmd, shell=True)
     out = out.decode('utf8').strip()
 
@@ -149,11 +164,21 @@ def kill(component):
 
     logging.info("got container %s for component %s", out, component)
     cmd = "docker container kill {}".format(out)
+    cmd_info(cmd)
     subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
     logging.info("removing container %s", component)
     cmd = "docker container rm ai4eu-sudoku-{}".format(component)
-    subprocess.check_call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
+    cmd_info(cmd)
+    # ignore failure!
+    subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
+
+
+def follow(component):
+
+    cmd = "docker logs -f ai4eu-sudoku-{}".format(component)
+    cmd_info(cmd)
+    subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def main():
@@ -218,9 +243,23 @@ def main():
             else:
                 raise ShowUsage()
 
+        elif mode == 'follow':
+
+            if len(args) == 1 and args[0] in COMPONENTS:
+                follow(args[0])
+            else:
+                raise ShowUsage()
+
         elif mode == 'list':
 
             subprocess.check_call('docker container list --all --filter name=ai4eu-sudoku*', shell=True, stdout=sys.stdout, stderr=sys.stderr)
+
+        elif mode == 'orchestrate':
+
+            cmd = 'python orchestrator.py'
+            cwd = 'orchestrator'
+            cmd_info(cmd, cwd=cwd)
+            subprocess.check_call(cmd, cwd=cwd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
     except ShowUsage:
         logging.error(USAGE.format(
