@@ -20,7 +20,7 @@ RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r /requir
 # copy sources
 RUN mkdir /app
 RUN mkdir /app/templates
-COPY gui.css gui.js config.json asp.proto sudoku-design-evaluator.proto sudoku-gui.proto server.py /app/
+COPY gui.css gui.js config.json sudoku-gui.proto server.py /app/
 COPY templates/* /app/templates/
 
 WORKDIR /app

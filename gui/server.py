@@ -12,15 +12,16 @@ import concurrent.futures
 import sys
 import traceback
 
-import google.protobuf.empty_pb2
-import sudoku_design_evaluator_pb2
+
 import sudoku_gui_pb2
 import sudoku_gui_pb2_grpc
+
 
 logger  = logging.getLogger(__name__)
 # the next line sets logging level for things outside uvicorn, that means for the gRPC server
 # set Python logging level for uvicorn when starting uvicorn!
 logging.basicConfig(level=logging.INFO)
+
 
 class FieldSpec(pydantic.BaseModel):
 
@@ -43,7 +44,7 @@ class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
     def requestSudokuEvaluation(self, request, context):
         logging.info("requesting sudoku evaluation")
 
-        ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationJob()
+        ret = sudoku_gui_pb2.SudokuDesignEvaluationJob()
 
         try:
             ret = self.to_protobuf_queue.get(block=True)
@@ -81,7 +82,7 @@ class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
         self.to_js_queue.put(gu)
 
         # dummy return
-        return google.protobuf.empty_pb2.Empty()
+        return sudoku_gui_pb2.Empty()
 
 
 app = fastapi.FastAPI(title='SudokuGUIServer', debug=True)
@@ -150,7 +151,7 @@ def setcell(x: int, y: int, value: Optional[int] = None) -> None:
     logging.info("after setcell: field has %d values set", len(field))
 
     # return design evaluation job from requestSudokuEvaluation()
-    ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationJob()
+    ret = sudoku_gui_pb2.SudokuDesignEvaluationJob()
     ret.field.extend([ 0 for x in range(0,81) ])
 
     for k, v in field.items():

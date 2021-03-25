@@ -36,7 +36,6 @@ USAGE = '''
 Helps to build/deploy the Sudoku Acumos example.
 
 Usage for building and pushing to docker registry:
-    {self} populate-protobufs
     {self} build-protobufs
     {self} build [component]
     {self} tag-and-push [component]
@@ -62,23 +61,6 @@ def cmd_info(cmd, cwd=None):
 
 class ShowUsage(Exception):
     pass
-
-
-def populate_protobufs():
-
-    # This script is required because docker does not permit to follow symlinks to parent directories.
-    # Therefore we have to copy and cannot symlink .proto files.
-    for cmd in [
-        'cp aspsolver/asp.proto evaluator/',
-        'cp aspsolver/asp.proto gui/',
-        'cp aspsolver/asp.proto orchestrator/',
-        'cp evaluator/sudoku-design-evaluator.proto gui/',
-        'cp evaluator/sudoku-design-evaluator.proto orchestrator/',
-        'cp gui/sudoku-gui.proto orchestrator/',
-    ]:
-
-        cmd_info(cmd)
-        subprocess.check_call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def build_protobufs():

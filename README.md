@@ -17,7 +17,7 @@ If you use conda (and generated the environment as indicated above) then, before
 The following commands build three docker images, run them, and then start an orchestrator outside of docker.
 
 ```
-$ ./helper.py populate-protobufs
+$ ./helper.py build-protobufs
 $ ./helper.py build
 $ ./helper.py run detached
 $ ./helper.py orchestrate
@@ -50,7 +50,6 @@ To build the docker images and upload them to the registry, the workflow is as f
 * run the following - the missing `/` in the first line is intentional!
 
 ```
-$ ./helper.py populate-protobufs
 $ ./helper.py build
 $ ./helper.py tag-and-push
 ```
@@ -103,6 +102,12 @@ You can test each component (GUI, ASP Solver, Sudoku Evaluator) independent from
 This section shows how to run each component and test it.
 
 ## Individual start of each docker container and testing
+
+First, build protobuf python files for testing and orchestration by running the following.
+
+```
+$ ./helper.py build-protobufs
+```
 
 * GUI
 
@@ -165,23 +170,16 @@ This section shows how to run each component and test it.
 
 ## Protobuf Files
 
-We have 6 protobuf files.
-
-* 3 protobuf files used within components, they use `import` statement to avoid code duplication.
-
-  The script `./helper.py populate-protobufs` manages these files, they must be copied to ecah subdirectory where they are used because of safety restrictions of docker.
-
-  The files that you should hand-edit are:
+We have three protobuf files that contain redundant content (Acumos currently does not support `import`).
+These three files that can be hand-edited are:
 
   * `aspsolver/asp.proto`
   * `evaluator/sudoku-design-evaluator.proto`
   * `gui/sudoku-gui.proto`
 
-* 3 protobuf files to be uploaded to Acumos (it currently does not support `import`).
+Other Protobuf Files are symlinked to these, in particular for the orchestrator.
 
-  They are in directory `acumos/`.
-
-WP3 is working on improving this situation so that only one version of each protobuf file is required.
+WP3 is working on improving this situation so that a proper modularization of Protobuf files can be done, without any duplicate code.
 
 ## Representation
 

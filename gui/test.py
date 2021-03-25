@@ -5,19 +5,19 @@ import grpc
 import sys
 import json
 
-import sudoku_design_evaluator_pb2
+import sudoku_gui_pb2
 import sudoku_gui_pb2_grpc
 
-configfile = "config.json"
-config = json.load(open(configfile, 'rt'))
 
 logging.basicConfig(level=logging.INFO)
 
 def main():
-   channel = grpc.insecure_channel('localhost:'+str(config['grpcport']))
-   stub = sudoku_gui_pb2_grpc.SudokuDesignEvaluationResultProcessorStub(channel)
+   # !!! here it is hardcoded to use the external port that ./helper.py assigns to the docker container !!!
+   # !!! if you run without docker, you need to use port 8061 !!!
+   channel = grpc.insecure_channel('localhost:8001')
+   stub = sudoku_gui_pb2_grpc.SudokuGUIStub(channel)
 
-   result = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
+   result = sudoku_gui_pb2.SudokuDesignEvaluationResult()
 
    # example: unique solution
    result.status = 1

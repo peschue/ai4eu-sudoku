@@ -7,7 +7,6 @@ import re
 import sys
 import time
 
-import asp_pb2
 import sudoku_design_evaluator_pb2
 import sudoku_design_evaluator_pb2_grpc
 
@@ -77,7 +76,7 @@ class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuD
         #logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
         facts = '\n'.join(facts)
 
-        ret = asp_pb2.SolverJob()
+        ret = sudoku_design_evaluator_pb2.SolverJob()
         ret.parameters.number_of_answers = 2 # at least 2, but we can use higher numbers.
         ret.program = self.encoding + facts
         return ret

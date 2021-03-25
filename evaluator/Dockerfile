@@ -15,7 +15,7 @@ RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r /requir
 
 # copy sources
 RUN mkdir /app
-COPY config.json asp.proto sudoku-design-evaluator.proto server.py /app/
+COPY config.json sudoku-design-evaluator.proto server.py /app/
 
 WORKDIR /app
 
