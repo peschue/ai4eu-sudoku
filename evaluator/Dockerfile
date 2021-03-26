@@ -17,6 +17,10 @@ RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r /requir
 RUN mkdir /app
 COPY config.json sudoku-design-evaluator.proto server.py /app/
 
+# adhere to container specification by also providing these two files
+COPY sudoku-design-evaluator.proto /mode.proto
+COPY license.json /license.json
+
 WORKDIR /app
 
 # compile protobuf

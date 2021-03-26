@@ -23,6 +23,10 @@ RUN mkdir /app/templates
 COPY gui.css gui.js config.json sudoku-gui.proto server.py /app/
 COPY templates/* /app/templates/
 
+# adhere to container specification by also providing these two files
+COPY sudoku-gui.proto /mode.proto
+COPY license.json /license.json
+
 WORKDIR /app
 
 # compile protobuf

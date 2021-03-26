@@ -43,6 +43,10 @@ ENV PYTHONPATH /opt/clingo/bin/python/
 RUN mkdir /app
 COPY config.json asp.proto server.py /app/
 
+# adhere to container specification by also providing these two files
+COPY asp.proto /mode.proto
+COPY license.json /license.json
+
 WORKDIR /app
 
 # compile protobuf
