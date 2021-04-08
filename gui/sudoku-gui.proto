@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package sudoku_gui;
+// package sudoku_gui;
 
 message Empty {
 }

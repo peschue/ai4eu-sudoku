@@ -18,10 +18,8 @@ import grpc
 import traceback
 
 # generated from .proto
-import sudoku_gui_pb2
-import sudoku_gui_pb2_grpc
-import sudoku_design_evaluator_pb2_grpc
-import asp_pb2_grpc
+import orchestrator_pb2 as pb
+import orchestrator_pb2_grpc as pb_grpc
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -38,20 +36,20 @@ def main():
 
     logging.info("connecting to GUI at %s", guiconn)
     gui_channel = grpc.insecure_channel(guiconn)
-    gui_stub = sudoku_gui_pb2_grpc.SudokuGUIStub(gui_channel)
+    gui_stub = pb_grpc.SudokuGUIStub(gui_channel)
 
     logging.info("connecting to design evaluator at %s", evalconn)
     evaluator_channel = grpc.insecure_channel(evalconn)
-    evaluator_stub = sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluatorStub(evaluator_channel)
+    evaluator_stub = pb_grpc.SudokuDesignEvaluatorStub(evaluator_channel)
 
     logging.info("connecting to ASP solver at %s", aspconn)
     aspsolver_channel = grpc.insecure_channel(aspconn)
-    aspsolver_stub = asp_pb2_grpc.OneshotSolverStub(aspsolver_channel)
+    aspsolver_stub = pb_grpc.OneshotSolverStub(aspsolver_channel)
 
     while True:
         try:
             logging.info("calling SudokuGUI.requestSudokuEvaluation() with empty dummy")
-            dummy1 = sudoku_gui_pb2.Empty()
+            dummy1 = pb.Empty()
             guijob = gui_stub.requestSudokuEvaluation(dummy1)
 
             logging.info("calling SudokuDesignEvaluator.evaluateSudokuDesign() with guijob")

@@ -14,15 +14,15 @@ import logging
 # the gRPC server must run at 8061 and the web gui (if exists) at 8062
 METADATA = {
     'gui': {
-        'version': '1.3',
+        'version': '1.4',
         'ports': {8061: 8001, 8062: 8000},
     },
     'evaluator': {
-        'version': '1.3',
+        'version': '1.4',
         'ports': {8061: 8002},
     },
     'aspsolver': {
-        'version': '1.0',
+        'version': '1.1',
         'ports': {8061: 8003},
     }
 }

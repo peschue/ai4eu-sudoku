@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package asp;
+// package asp;
 
 message KeyValuePair {
   string key = 1;

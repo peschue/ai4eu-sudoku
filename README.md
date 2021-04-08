@@ -35,9 +35,9 @@ In a new browser window open http://localhost:8000/ and you should see a Sudoku 
 
 You can follow the logs of each docker container using `./helper.py follow <component>`, for example `./helper.py follow gui`.
 
-# Running Sudoku using Acumos
+# Running Sudoku using AI4EU Experiments Acumos
 
-First we onboarding three components to Acumos (Gui, Evaluator, ASP Solver).
+First we onboarding three components to AI4EU Experiments Acumos platform (Gui, Evaluator, ASP Solver).
 
 These components are all built from this repository and first need to be uploaded to a docker registry.
 
@@ -60,9 +60,9 @@ Decide on which docker registry you want to host the images. Setup the URI and p
 Log in to the registry with `docker login <URI>`.
 Run `./helper.py tag-and-push`. If it fails, retrying can help. Maybe multiple times.
 
-## Register components in Acumos
+## Register components in AI4EU Experiments
 
-Login to Acumos and use "On-boarding Model" menu item and there "On-board dockerized Model URI".
+Login to the platform and use "On-boarding Model" menu item and there "On-board dockerized Model URI".
 
 You extract host and port from the `REMOTE_REPO` where you pushed your images (see above).
 
@@ -74,7 +74,13 @@ Images are tagged as
 
 Versions are defined in the top of `helper.py`.
 
-The protobuf files to upload are in directory `acumos/`.
+The protobuf files to upload are in the component directories:
+
+*  `gui/sudoku-gui.proto`
+*  `evaluator/sudoku-desgin-evaluator.proto`
+*  `aspsolver/asp.proto`
+
+You do **not** need to upload `orchestrator/orchestrator.proto` anywhere because the generic orchestrator within AI4EU Experiments will automatically assemble a suitable protobuf file.
 
 For example to onboard the ASP Solver:
 
@@ -82,7 +88,7 @@ For example to onboard the ASP Solver:
 * port: 7444
 * image: sudoku/ai4eu
 * tag: aspsolver-1.0
-* protobuf file (press upload!): acumos/asp.proto
+* protobuf file (press upload!): aspsolver/asp.proto
 
 Finally, once the model is "on-boarded" the category needs to be set in "My Models" -> select model -> "Manage Model" -> "Publish to Marketplace" -> "Model Category". (You can ignore error message about author name, you can choose "Data Transformer" and "Scikit-learn" for all models.)
 
@@ -170,16 +176,14 @@ $ ./helper.py build-protobufs
 
 ## Protobuf Files
 
-We have three protobuf files that contain redundant content (Acumos currently does not support `import`).
+We have three protobuf files that contain redundant content (AI4EU Experiments Acumos currently does not support `import`).
 These three files that can be hand-edited are:
 
   * `aspsolver/asp.proto`
   * `evaluator/sudoku-design-evaluator.proto`
   * `gui/sudoku-gui.proto`
 
-Other Protobuf Files are symlinked to these, in particular for the orchestrator.
-
-WP3 is working on improving this situation so that a proper modularization of Protobuf files can be done, without any duplicate code.
+The non-generic Orchestrator in `orchestrator/` uses a manually assembled protobuf file that contains the union of the above files with duplicates removed: `orchestrator/orchestrator.proto`. This file is not required for the AI4EU Experiments platform.
 
 ## Representation
 

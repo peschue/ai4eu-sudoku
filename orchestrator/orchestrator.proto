@@ -1,6 +1,8 @@
+// This file is for the manually written orchestrator. It is not required on the AI4EU Experiments platform.
+
 syntax = "proto3";
 
-// package sudoku_design_evaluator;
+// ASP Solver
 
 message KeyValuePair {
   string key = 1;
@@ -41,6 +43,12 @@ message SolveResultAnswersets {
   repeated Answerset answers = 2;
 }
 
+service OneshotSolver {
+  rpc solve(SolverJob) returns (SolveResultAnswersets);
+}
+
+// additional code for Design Evaluator
+
 message SudokuDesignEvaluationJob {
   // 0 means empty, 1-9 means the respective digit is in that field
   // addressing is as follows: field[column+9*row]
@@ -65,4 +73,14 @@ message SudokuDesignEvaluationResult {
 service SudokuDesignEvaluator {
   rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (SolverJob);
   rpc processSolverResult(SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
+}
+
+// additional code for GUI
+
+message Empty {
+}
+
+service SudokuGUI {
+  rpc requestSudokuEvaluation(Empty) returns(SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
 }
