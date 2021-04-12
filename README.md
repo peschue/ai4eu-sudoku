@@ -86,8 +86,8 @@ For example to onboard the ASP Solver:
 
 * registry: cicd.ai4eu-dev.eu
 * port: 7444
-* image: sudoku/ai4eu
-* tag: aspsolver-1.0
+* image: tutorials/sudoku
+* tag: aspsolver-1.1
 * protobuf file (press upload!): aspsolver/asp.proto
 
 Finally, once the model is "on-boarded" the category needs to be set in "My Models" -> select model -> "Manage Model" -> "Publish to Marketplace" -> "Model Category". (You can ignore error message about author name, you can choose "Data Transformer" and "Scikit-learn" for all models.)
