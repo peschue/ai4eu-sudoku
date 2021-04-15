@@ -44,7 +44,7 @@ RUN mkdir /app
 COPY config.json asp.proto server.py /app/
 
 # adhere to container specification by also providing these two files
-COPY asp.proto /mode.proto
+COPY asp.proto /model.proto
 COPY license.json /license.json
 
 WORKDIR /app
