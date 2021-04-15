@@ -47,7 +47,6 @@ To build the docker images and upload them to the registry, the workflow is as f
 
 * configure REMOTE_REPO in `./helper.py`.
 * login to the remote repo with `docker login <your REMOTE_REPO>`
-* run the following - the missing `/` in the first line is intentional!
 
 ```
 $ ./helper.py build

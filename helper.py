@@ -36,16 +36,18 @@ USAGE = '''
 Helps to build/deploy the Sudoku Acumos example.
 
 Usage for building and pushing to docker registry:
-    {self} build-protobufs
     {self} build [component]
     {self} tag-and-push [component]
 
 Usage for running locally using docker:
+    {self} build-protobufs
     {self} run {{detached|interactive|shell}} [component]
-    {self} kill [component]
+    {self} orchestrate
+
+Usage for maintenance of local runs:
     {self} follow [component]
     {self} list
-    {self} orchestrate
+    {self} kill [component]
 
 where [component] is one of {comps}
 '''
