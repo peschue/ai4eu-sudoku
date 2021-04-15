@@ -105,6 +105,8 @@ def tag_and_push(component):
     cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
+    print("\u001b[31mpushed %s to repo/path %s with tag %s-%s\u001b[37m" % (component, x['repo'], x['comp'], x['ver']))
+
 
 def run(mode, component):
     if mode not in ['detached', 'interactive', 'shell']:
