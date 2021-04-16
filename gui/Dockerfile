@@ -35,4 +35,6 @@ RUN python3 -m grpc_tools.protoc --python_out=. --proto_path=. --grpc_python_out
 EXPOSE 8061 8062
 
 # run server with default Python log level "debug"
+#ENV GRPC_TRACE=channel,call-error,client_channel,connectivity_state
+#ENV GRPC_VERBOSITY=INFO
 CMD uvicorn server:app --host 0.0.0.0 --port 8062 --log-level ${PYTHON_LOGLEVEL:-debug}
