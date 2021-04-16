@@ -2,7 +2,8 @@ syntax = "proto3";
 
 // package sudoku_gui;
 
-message Empty {
+// do not call this "Empty"!
+message EmptyMessage {
 }
 
 message SudokuDesignEvaluationJob {
@@ -27,6 +28,6 @@ message SudokuDesignEvaluationResult {
 }
 
 service SudokuGUI {
-  rpc requestSudokuEvaluation(Empty) returns(SudokuDesignEvaluationJob);
-  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
+  rpc requestSudokuEvaluation(EmptyMessage) returns(SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(EmptyMessage);
 }

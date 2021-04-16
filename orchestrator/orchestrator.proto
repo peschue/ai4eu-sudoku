@@ -77,10 +77,10 @@ service SudokuDesignEvaluator {
 
 // additional code for GUI
 
-message Empty {
+message EmptyMessage {
 }
 
 service SudokuGUI {
-  rpc requestSudokuEvaluation(Empty) returns(SudokuDesignEvaluationJob);
-  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
+  rpc requestSudokuEvaluation(EmptyMessage) returns(SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(EmptyMessage);
 }

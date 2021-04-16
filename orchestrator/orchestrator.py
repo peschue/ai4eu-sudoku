@@ -49,7 +49,7 @@ def main():
     while True:
         try:
             logging.info("calling SudokuGUI.requestSudokuEvaluation() with empty dummy")
-            dummy1 = pb.Empty()
+            dummy1 = pb.EmptyMessage()
             guijob = gui_stub.requestSudokuEvaluation(dummy1)
 
             logging.info("calling SudokuDesignEvaluator.evaluateSudokuDesign() with guijob")

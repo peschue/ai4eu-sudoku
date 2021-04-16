@@ -82,7 +82,7 @@ class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
         self.to_js_queue.put(gu)
 
         # dummy return
-        return sudoku_gui_pb2.Empty()
+        return sudoku_gui_pb2.EmptyMessage()
 
 
 app = fastapi.FastAPI(title='SudokuGUIServer', debug=True)
