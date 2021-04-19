@@ -247,6 +247,9 @@ def main():
             cmd_info(cmd, cwd=cwd)
             subprocess.check_call(cmd, cwd=cwd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
+        else:
+            raise ShowUsage()
+
     except ShowUsage:
         logging.error(USAGE.format(
             self=sys.argv[0],
