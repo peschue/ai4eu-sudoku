@@ -1,0 +1,48 @@
+Cheatsheet Building:
+1) Make sure you have docker and Python and git installed
+2) $ git clone https://github.com/peschue/ai4eu-sudoku/
+3) configure docker repository in helper.py
+4) $ docker login [your-repository]
+5) $ ./helper.py build
+6) $ ./helper.py tag-and-push
+
+Cheatsheet Onboarding:
+7) Login to AI4EU Experiments Platform
+8) Click "On-boarding Model"
+9) For each component in {gui, evaluator, aspsolver}:
+9.1) Enter data, browse for the correct protobuf file and click "Upload".
+9.2) Click "On-Board Model" and wait until the status icons become green.
+9.3) Click "Upload New"
+10) For each component as before:
+10.1) Choose "My Models", select the model
+10.2) Click "Manage My Model" - "Publish to Marketplace" - "Model Category"
+10.3) Select "Data Transformer" and "Scikit-learn" and save
+
+Cheatsheet Assembling Solution:
+11) Login to AI4EU Experiments Platform
+12) Choose "Design Studio" - "Launch" Acu-components
+13) Drag the three components to the canvas and connect matching ports
+14) Click "Save" and enter some name and version.
+15) Click "Validate".
+
+Cheatsheet Deployment:
+16) Make sure you have kubernetes and Python
+17) Start with the loaded solution in Design Studio / Acu-Compose
+18) Click "Deploy" - "Deploy to local" - "Export To Local" - "Download Solution Package"
+19) Download solution.zip and unzip it in a new folder.
+20) $ kubectl create namespace sudoku
+21) $ python kubernetes-client-script.py -n sudoku
+22) Write down/store the Node IP-address [address] and the Orchestrator Port [port]
+    that are printed in the last 2 lines of the output of the previous command.
+23) $ cd orchestrator_client
+24) Run orchestration
+24.1) Once: $ python orchestrator_client.py [address]:[port]
+24.2) Endless: $ while sleep 1; do python orchestrator_client.py [address]:[port]; done
+
+Cheatsheet accessing GUI with minikube:
+25) $ minikube -n sudoku service --url sudoku-gui1webui
+26) Navigate in the browser to the URL shown by the previous command.
+
+Cheatsheet accessing GUI in general:
+27) $ kubectl -n sudoku get node,service -o wide
+28) Navigate in the browser to the URL shown for the "Node" and to the Port shown for the "sudoku-gui1webui" service.
