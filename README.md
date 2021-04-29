@@ -1,6 +1,9 @@
-# ai4eu-sudoku
+# AI4EU Sudoku Hello World
 
 PoC for a Sudoku design assistant based on ASP, gRPC, and Protobuf, deployable in AI4EU Experiments.
+
+A Tutorial video about this "Sudoku Hello World" can be found here:
+https://www.youtube.com/watch?v=gM-HRMNOi4w
 
 # Prerequisites
 
