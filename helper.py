@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 
 #
-# this script helps to build/deploy the sudoku acumos example
-# it basically helps with docker commands and compiling protobuf
+# Copyright (c) 2021 Peter Schüller, Technische Universität Wien
+# MIT License
+#
+
+#
+# This script helps to build/deploy the Sudoku Tutorial
+# for the AI4EU Experiments Platform.
+# It basically helps with docker commands and compiling protobuf.
 #
 
 import subprocess
@@ -27,13 +33,16 @@ METADATA = {
     }
 }
 
+# this is used as prefix for local images and containers
+BASENAME = 'ai4eu-sudoku'
+
 REMOTE_REPO = 'cicd.ai4eu-dev.eu:7444/tutorials/sudoku'
 # REMOTE_REPO = 'peterschueller/test'
 
 COMPONENTS = ['gui', 'evaluator', 'aspsolver']
 
 USAGE = '''
-Helps to build/deploy the Sudoku Acumos example.
+Helps to build/deploy the Sudoku Tutorial for the AI4EU Experiments Platform.
 
 Usage for building and pushing to docker registry:
     {self} build [component]
@@ -80,8 +89,8 @@ def build(component):
 
     logging.info("building component %s", component)
 
-    cmd = "docker build -t ai4eu-sudoku:{}-{} .".format(
-        component, METADATA[component]['version'])
+    cmd = "docker build -t {}:{}-{} .".format(
+        BASENAME, component, METADATA[component]['version'])
     cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
@@ -91,11 +100,12 @@ def tag_and_push(component):
     logging.info("tagging component %s", component)
 
     x = {
+        'basename': BASENAME,
         'comp': component,
         'ver': METADATA[component]['version'],
         'repo': REMOTE_REPO
     }
-    cmd = "docker tag ai4eu-sudoku:{comp}-{ver} {repo}:{comp}-{ver}".format(**x)
+    cmd = "docker tag {basename}:{comp}-{ver} {repo}:{comp}-{ver}".format(**x)
     cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
@@ -113,6 +123,7 @@ def run(mode, component):
         raise ShowUsage()
 
     x = {
+        'basename': BASENAME,
         'comp': component,
         'ver': METADATA[component]['version'],
         'ports': ' '.join([
@@ -132,14 +143,14 @@ def run(mode, component):
         x['args'] += ' -it'
         x['cmd'] = '/bin/bash'
 
-    cmd = 'docker run {args} --name ai4eu-sudoku-{comp} {ports} ai4eu-sudoku:{comp}-{ver} {cmd}'.format(**x)
+    cmd = 'docker run {args} --name {basename}-{comp} {ports} {basename}:{comp}-{ver} {cmd}'.format(**x)
     cmd_info(cmd, cwd=component)
     subprocess.check_call(cmd, cwd=component, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def kill(component):
 
-    cmd = "docker container ls -q --filter name=ai4eu-sudoku-{}".format(component)
+    cmd = "docker container ls -q --filter name={}-{}".format(BASENAME, component)
     cmd_info(cmd)
     out = subprocess.check_output(cmd, shell=True)
     out = out.decode('utf8').strip()
@@ -154,7 +165,7 @@ def kill(component):
     subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
     logging.info("removing container %s", component)
-    cmd = "docker container rm ai4eu-sudoku-{}".format(component)
+    cmd = "docker container rm {}-{}".format(BASENAME, component)
     cmd_info(cmd)
     # ignore failure!
     subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
@@ -162,7 +173,7 @@ def kill(component):
 
 def follow(component):
 
-    cmd = "docker logs -f ai4eu-sudoku-{}".format(component)
+    cmd = "docker logs -f {}-{}".format(BASENAME, component)
     cmd_info(cmd)
     subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
@@ -176,13 +187,7 @@ def main():
         mode = sys.argv[1]
         args = sys.argv[2:]
 
-        if mode == 'populate-protobufs':
-
-            if args != []:
-                raise ShowUsage()
-            populate_protobufs()
-
-        elif mode == 'build-protobufs':
+        if mode == 'build-protobufs':
 
             if args != []:
                 raise ShowUsage()
@@ -238,7 +243,7 @@ def main():
 
         elif mode == 'list':
 
-            subprocess.check_call('docker container list --all --filter name=ai4eu-sudoku*', shell=True, stdout=sys.stdout, stderr=sys.stderr)
+            subprocess.check_call('docker container list --all --filter name={}*'.format(BASENAME), shell=True, stdout=sys.stdout, stderr=sys.stderr)
 
         elif mode == 'orchestrate':
 
@@ -246,9 +251,6 @@ def main():
             cwd = 'orchestrator'
             cmd_info(cmd, cwd=cwd)
             subprocess.check_call(cmd, cwd=cwd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
-
-        else:
-            raise ShowUsage()
 
     except ShowUsage:
         logging.error(USAGE.format(
