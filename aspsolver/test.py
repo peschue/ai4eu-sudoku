@@ -2,7 +2,6 @@
 
 import logging
 import grpc
-import sys
 import json
 
 import asp_pb2_grpc
@@ -20,12 +19,13 @@ def main():
     channel = grpc.insecure_channel('localhost:8003')
     stub = asp_pb2_grpc.OneShotAnswerSetSolverStub(channel)
 
-   job = asp_pb2.SolverJob()
-   job.program = 'a :- not b. b :- not a. { c ; d ; e }. :~ a. [1,a] :~ c. [1,c]'
-   job.parameters.number_of_answers = 5
+    job = asp_pb2.SolverJob()
+    job.program = 'a :- not b. b :- not a. { c ; d ; e }. :~ a. [1,a] :~ c. [1,c]'
+    job.parameters.number_of_answers = 5
 
-   response = stub.solve(job)
+    response = stub.solve(job)
 
-   logging.info("got response '%s' (expect 4 optimal answers: {b}, {b,e}, {b,d}, {b,d,e})", response)
+    logging.info("got response '%s' (expect 4 optimal answers: {b}, {b,e}, {b,d}, {b,d,e})", response)
+
 
 main()
