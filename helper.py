@@ -28,7 +28,7 @@ METADATA = {
         'ports': {8061: 8002},
     },
     'aspsolver': {
-        'version': '1.1',
+        'version': '1.2',
         'ports': {8061: 8003},
     }
 }

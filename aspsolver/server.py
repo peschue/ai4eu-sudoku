@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
 
-class GRPCOneshotSolverServicer(asp_pb2_grpc.OneshotSolverServicer):
+
+class GRPCServicer(asp_pb2_grpc.OneShotAnswerSetSolverServicer):
     def __init__(self):
         pass
 
@@ -47,7 +48,7 @@ configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "config.json"
 logging.info("loading config from %s", configfile)
 config = json.load(open(configfile, 'rt'))
 grpcserver = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=10))
-asp_pb2_grpc.add_OneshotSolverServicer_to_server(GRPCOneshotSolverServicer(), grpcserver)
+asp_pb2_grpc.add_OneShotAnswerSetSolverServicer_to_server(GRPCServicer(), grpcserver)
 grpcport = config['grpcport']
 # listen on all interfaces (otherwise docker cannot export)
 grpcserver.add_insecure_port('0.0.0.0:'+str(grpcport))
