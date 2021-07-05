@@ -54,7 +54,7 @@ def main():
     asp_thread = om.create_thread(
         stream_in=False, stream_out=False,
         host='localhost', port=config['aspsolver-grpcport'],
-        service='OneshotSolver', rpc='solve')
+        service='OneShotAnswerSetSolver', rpc='solve')
 
     eval_job_queue = om.create_queue(name='eval_job', message='SudokuDesignEvaluationJob')
     eval_result_queue = om.create_queue(name='eval_result', message='SudokuDesignEvaluationResult')
