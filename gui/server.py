@@ -42,12 +42,20 @@ class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
         self.to_js_queue = to_js_queue
 
     def requestSudokuEvaluation(self, request, context):
-        logging.info("requesting sudoku evaluation")
+        logging.info("requestSudokuEvaluation called")
 
         try:
             while True:
-                yield self.to_protobuf_queue.get(block=True)
-        except:
+                try:
+                    # make sure we notice that the connection is gone if the orchestrator dies
+                    ret = self.to_protobuf_queue.get(block=True, timeout=1.0)
+                    logging.info("requestSudokuEvaluation yielding %s", ret)
+                    yield ret
+                except queue.Empty:
+                    if not context.is_active():
+                        raise RuntimeError("RPC interrupted - leaving requestSudokuEvaluation")
+                    # otherwise continue
+        except Exception:
             logging.warning("got exception %s", traceback.format_exc())
             time.sleep(1)
             pass
