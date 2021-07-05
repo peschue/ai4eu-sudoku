@@ -27,6 +27,6 @@ message SudokuDesignEvaluationResult {
 }
 
 service SudokuGUI {
-  rpc requestSudokuEvaluation(Empty) returns(SudokuDesignEvaluationJob);
-  rpc processEvaluationResult(SudokuDesignEvaluationResult) returns(Empty);
+  rpc requestSudokuEvaluation(Empty) returns(stream SudokuDesignEvaluationJob);
+  rpc processEvaluationResult(stream SudokuDesignEvaluationResult) returns(Empty);
 }

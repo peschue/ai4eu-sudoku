@@ -44,42 +44,40 @@ class SudokuGUIServicerImpl(sudoku_gui_pb2_grpc.SudokuGUIServicer):
     def requestSudokuEvaluation(self, request, context):
         logging.info("requesting sudoku evaluation")
 
-        ret = sudoku_gui_pb2.SudokuDesignEvaluationJob()
-
         try:
-            ret = self.to_protobuf_queue.get(block=True)
+            while True:
+                yield self.to_protobuf_queue.get(block=True)
         except:
             logging.warning("got exception %s", traceback.format_exc())
             time.sleep(1)
             pass
 
-        return ret
+    def processEvaluationResult(self, request_iterator, context):
+        for request in request_iterator:
+            logging.info("received evaluation result with status %d and solution of size %d", request.status, len(request.solution))
 
-    def processEvaluationResult(self, request, context):
-        logging.info("received evaluation result with status %d and solution of size %d", request.status, len(request.solution))
+            # pass this to javascript to send it to the GUI
+            statusstr = {
+                0: 'Sudoku has no solution',
+                1: 'Sudoku has a unique solution',
+                2: 'Sudoku has multiple solutions'
+            }[request.status]
+            fields = []
+            if request.status in [1,2]:
+                for row in range(0,9):
+                    for col in range(0,9):
+                        v = request.solution[col+9*row]
+                        if v != 0:
+                            fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='solution'))
+            elif request.status == 0:
+                for row in range(0,9):
+                    for col in range(0,9):
+                        v = request.inconsistency_involved[col+9*row]
+                        if v != 0:
+                            fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='problem'))
 
-        # pass this to javascript to send it to the GUI
-        statusstr = {
-            0: 'Sudoku has no solution',
-            1: 'Sudoku has a unique solution',
-            2: 'Sudoku has multiple solutions'
-        }[request.status]
-        fields = []
-        if request.status in [1,2]:
-            for row in range(0,9):
-                for col in range(0,9):
-                    v = request.solution[col+9*row]
-                    if v != 0:
-                        fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='solution'))
-        elif request.status == 0:
-            for row in range(0,9):
-                for col in range(0,9):
-                    v = request.inconsistency_involved[col+9*row]
-                    if v != 0:
-                        fields.append(FieldSpec(x=col+1, y=row+1, content=v, cssclass='problem'))
-
-        gu = GUIUpdate(statusbar=statusstr, field=fields)
-        self.to_js_queue.put(gu)
+            gu = GUIUpdate(statusbar=statusstr, field=fields)
+            self.to_js_queue.put(gu)
 
         # dummy return
         return sudoku_gui_pb2.Empty()
