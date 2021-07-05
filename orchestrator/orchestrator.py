@@ -35,12 +35,12 @@ def main():
     om = othread.OrchestrationManager()
 
     gui_request_thread = om.create_thread(
-        stream_in=False, stream_out=True,
+        stream_in=False, stream_out=True, empty_in=True,
         host='localhost', port=config['gui-grpcport'],
         service='SudokuGUI', rpc='requestSudokuEvaluation')
     # TODO add inputmessage / outputmessage (json representation?)
     gui_result_thread = om.create_thread(
-        stream_in=True, stream_out=False,
+        stream_in=True, stream_out=False, empty_out=True,
         host='localhost', port=config['gui-grpcport'],
         service='SudokuGUI', rpc='processEvaluationResult')
     eval_evaluate_thread = om.create_thread(
