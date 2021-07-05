@@ -17,6 +17,8 @@ import time
 import grpc
 import traceback
 
+import othread
+
 # generated from .proto
 import orchestrator_pb2 as pb
 import orchestrator_pb2_grpc as pb_grpc
@@ -30,48 +32,48 @@ config = json.load(open(configfile, 'rt'))
 
 
 def main():
-    guiconn = 'localhost:' + str(config['gui-grpcport'])
-    evalconn = 'localhost:' + str(config['designevaluator-grpcport'])
-    aspconn = 'localhost:' + str(config['aspsolver-grpcport'])
+    om = othread.OrchestrationManager()
 
-    logging.info("connecting to GUI at %s", guiconn)
-    gui_channel = grpc.insecure_channel(guiconn)
-    gui_stub = pb_grpc.SudokuGUIStub(gui_channel)
+    gui_request_thread = om.create_thread(
+        stream_in=False, stream_out=True,
+        host='localhost', port=config['gui-grpcport'],
+        service='SudokuGUI', rpc='requestSudokuEvaluation')
+    # TODO add inputmessage / outputmessage (json representation?)
+    gui_result_thread = om.create_thread(
+        stream_in=True, stream_out=False,
+        host='localhost', port=config['gui-grpcport'],
+        service='SudokuGUI', rpc='processEvaluationResult')
+    eval_evaluate_thread = om.create_thread(
+        stream_in=False, stream_out=False,
+        host='localhost', port=config['designevaluator-grpcport'],
+        service='SudokuDesignEvaluator', rpc='evaluateSudokuDesign')
+    eval_process_thread = om.create_thread(
+        stream_in=False, stream_out=False,
+        host='localhost', port=config['designevaluator-grpcport'],
+        service='SudokuDesignEvaluator', rpc='processSolverResult')
+    asp_thread = om.create_thread(
+        stream_in=False, stream_out=False,
+        host='localhost', port=config['aspsolver-grpcport'],
+        service='OneshotSolver', rpc='solve')
 
-    logging.info("connecting to design evaluator at %s", evalconn)
-    evaluator_channel = grpc.insecure_channel(evalconn)
-    evaluator_stub = pb_grpc.SudokuDesignEvaluatorStub(evaluator_channel)
+    eval_job_queue = om.create_queue(name='eval_job', message='SudokuDesignEvaluationJob')
+    eval_result_queue = om.create_queue(name='eval_result', message='SudokuDesignEvaluationResult')
+    asp_job_queue = om.create_queue(name='asp_job', message='SolverJob')
+    answersets_queue = om.create_queue(name='answersets', message='SolveResultAnswersets')
 
-    logging.info("connecting to ASP solver at %s", aspconn)
-    aspsolver_channel = grpc.insecure_channel(aspconn)
-    aspsolver_stub = pb_grpc.OneshotSolverStub(aspsolver_channel)
+    gui_request_thread.attach_output_queue(eval_job_queue)
+    eval_evaluate_thread.attach_input_queue(eval_job_queue)
 
-    while True:
-        try:
-            logging.info("calling SudokuGUI.requestSudokuEvaluation() with empty dummy")
-            dummy1 = pb.Empty()
-            guijob = gui_stub.requestSudokuEvaluation(dummy1)
+    eval_evaluate_thread.attach_output_queue(asp_job_queue)
+    asp_thread.attach_input_queue(asp_job_queue)
 
-            logging.info("calling SudokuDesignEvaluator.evaluateSudokuDesign() with guijob")
-            solverjob = evaluator_stub.evaluateSudokuDesign(guijob)
+    asp_thread.attach_output_queue(answersets_queue)
+    eval_process_thread.attach_input_queue(answersets_queue)
 
-            logging.info("calling OneshotSolver.solve() with parameters %s", solverjob.parameters)
-            aspresult = aspsolver_stub.solve(solverjob)
+    eval_process_thread.attach_output_queue(eval_result_queue)
+    gui_result_thread.attach_input_queue(eval_result_queue)
 
-            logging.info(
-                "calling SudokuDesignEvaluator.processEvaluationResult() with %d answer sets and description %s",
-                len(aspresult.answers), aspresult.description)
-            evalresult = evaluator_stub.processSolverResult(aspresult)
-
-            logging.info(
-                "calling SudokuGUI.processEvaluationResult() with status %d, len(solution)=%d, len(minimal_unsolvable)=%s",
-                evalresult.status, len(evalresult.solution), len(evalresult.inconsistency_involved))
-            _ = gui_stub.processEvaluationResult(evalresult)
-
-        except Exception:
-            logging.error("exception (retrying after 2 seconds): %s", traceback.format_exc())
-            # do not spam
-            time.sleep(2)
+    om.orchestrate_forever()
 
 
 main()
