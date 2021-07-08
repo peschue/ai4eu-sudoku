@@ -192,17 +192,18 @@ class NonstreamOrchestrationThread(OrchestrationThreadBase):
         self._event('thread terminated', {})
 
 
+class InputIteratorFromOrchestrationQueue:
+    def __init__(self, q: OrchestrationQueue):
+        self.q = q
+
+    def __iter__(self):
+        while True:
+            e = self.q.consume()
+            # TODO remember "unconsumed" if exception during yield and usefor next rpc call
+            yield e
+
+
 class StreamInOrchestrationThread(OrchestrationThreadBase):
-    class InputIteratorFromQueue:
-        def __init__(self, q: OrchestrationQueue):
-            self.q = q
-
-        def __iter__(self):
-            while True:
-                e = self.q.consume()
-                # TODO remember "unconsumed" if exception during yield and usefor next rpc call
-                yield e
-
     def run(self):
         self._event('thread started', {})
         channel = grpc.insecure_channel(f'{self.host}:{self.port}')
@@ -212,7 +213,7 @@ class StreamInOrchestrationThread(OrchestrationThreadBase):
             while True:
                 while self.input_queue.qsize() == 0:
                     time.sleep(0.1)
-                in_message_iterator = self.InputIteratorFromQueue(self.input_queue)
+                in_message_iterator = InputIteratorFromOrchestrationQueue(self.input_queue)
                 self._event('calling RPC', {'rpc': self.rpcname})
                 out_message = getattr(stub, self.rpcname)(in_message_iterator.__iter__())
                 self._event('distributing output message', {'rpc': self.rpcname, 'message': out_message})
@@ -225,8 +226,19 @@ class StreamInOrchestrationThread(OrchestrationThreadBase):
 class StreamInOutOrchestrationThread(OrchestrationThreadBase):
     def run(self):
         self._event('thread started', {})
+        channel = grpc.insecure_channel(f'{self.host}:{self.port}')
+        stub = resolve_service_stub(self.servicename)(channel)
+        assert(self.empty_in is False)
         try:
-            pass
+            while True:
+                while self.input_queue.qsize() == 0:
+                    time.sleep(0.1)
+                in_message_iterator = InputIteratorFromOrchestrationQueue(self.input_queue)
+                self._event('calling RPC', {'rpc': self.rpcname})
+                rpcresult = getattr(stub, self.rpcname)(in_message_iterator.__iter__())
+                for out_message in rpcresult:
+                    self._event('distributing streaming output', {'rpc': self.rpcname, 'message': out_message})
+                    self._distribute_or_ignore_output(out_message)
         except Exception:
             logging.error(traceback.format_exc())
         self._event('thread terminated', {})
@@ -281,10 +293,10 @@ class OrchestrationManager:
         return q
 
     def orchestrate_forever(self):
-        # event 
+        # event
         for t in self.threads.values():
             t.start()
 
-        # event 
+        # event
         for t in self.threads.values():
             t.join()
