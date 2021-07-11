@@ -3,19 +3,28 @@ import grpc
 import json
 import logging
 import os
-import re
-import sys
+import queue
 import time
+import traceback
 
 import sudoku_design_evaluator_pb2
 import sudoku_design_evaluator_pb2_grpc
+
 
 logger = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
 
+# class AI4EUSubmoduleCallHelper:
+#     def __init__(self, call_method: str, receive_method: str):
+
+
 class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuDesignEvaluatorServicer):
     def __init__(self):
+        # for calling a submodule
+        self.call_queue = queue.Queue(maxsize=1)
+        self.receive_queue = queue.Queue(maxsize=1)
+
         self.encoding = '''
             % Adapted from an example by Hakan Kjellerstrand, hakank@gmail.com
             % See also http://www.hakank.org/answer_set_programming/
@@ -76,25 +85,33 @@ class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuD
         #logging.warning("evaluateSudokuDesign with filtered facts %s", [ f for f in facts if re.match(r'x\([12],[12],.\)', f) ])
         facts = '\n'.join(facts)
 
-        ret = sudoku_design_evaluator_pb2.SolverJob()
-        ret.parameters.number_of_answers = 2 # at least 2, but we can use higher numbers.
-        ret.program = self.encoding + facts
-        return ret
+        job = sudoku_design_evaluator_pb2.SolverJob()
+        job.parameters.number_of_answers = 2 # at least 2, but we can use higher numbers.
+        job.program = self.encoding + facts
 
-    def processSolverResult(self, request, context):
+        # enqueue job and wait for result
+        self.call_queue.put(job)
+        result = self.receive_queue.get()
+
         answers = [
             {
-                'y': [ a for a in ans.atoms if a.startswith('y') ],
-                'omit': [ a for a in ans.atoms if a.startswith('omit') ]
+                'y': [a for a in ans.atoms if a.startswith('y')],
+                'omit': [a for a in ans.atoms if a.startswith('omit')]
             }
-            for ans in request.answers
+            for ans in result.answers
         ]
-        logging.info("processSolverResult request with %s atoms in respective answer sets", [ { k : len(v) for k, v in answer.items() } for answer in answers ])
-        #logging.warning("processSolverResult filtered atoms[0] %s", [ f for f in request.answers[0].atoms if re.match(r'y\([12],[12],.\)', f) ])
+        logging.info(
+            "evaluateSudokuDesign got answer sets with the following amount of atoms: %s",
+            [
+                {k: len(v) for k, v in answer.items()}
+                for answer in answers
+            ]
+        )
+        #logging.warning("processSolverResult filtered atoms[0] %s", [ f for f in result.answers[0].atoms if re.match(r'y\([12],[12],.\)', f) ])
 
         ret = sudoku_design_evaluator_pb2.SudokuDesignEvaluationResult()
 
-        if all([ len(a['omit']) == 0 for a in answers ]):
+        if all([len(a['omit']) == 0 for a in answers]):
             if len(answers) == 1:
                 # unique solution
                 ret.status = 1
@@ -150,9 +167,57 @@ class SudokuDesignEvaluatorServicerImpl(sudoku_design_evaluator_pb2_grpc.SudokuD
                     # set field (does not matter if it was set multiple times)
                     ret.inconsistency_involved[x+y*9] = val
 
-        count_nonzero = lambda x: len([y for y in x if y != 0])
-        logging.info("returning status %d, solution with %d nonzeroelements and inconsistency_involved with %d nonzero elements", ret.status, count_nonzero(ret.solution), count_nonzero(ret.inconsistency_involved))
+        def count_nonzero(x):
+            return len([y for y in x if y != 0])
+        logging.info(
+            "returning status %d, solution with %d nonzeroelements and inconsistency_involved with %d nonzero elements",
+            ret.status, count_nonzero(ret.solution), count_nonzero(ret.inconsistency_involved))
         return ret
+
+    def callAnswersetSolver(self, request, context):
+        _ = request
+        while True:
+            try:
+                # with timeout to permit detection of interrupted connection
+                try:
+                    job = self.call_queue.get(timeout=1.0)
+                except queue.Empty:
+                    # leave if orchestrator disconnected
+                    if not context.is_active():
+                        logging.info("RPC inactive - leaving callAnswersetSolver")
+                        break
+                else:
+                    yield job
+
+            except Exception as e:
+                logging.info("exception in callAnswersetSolver: %s\n%s", e, traceback.format_exc())
+                # allow new call to start
+                break
+
+    def receiveAnswersetSolverResult(self, request_iterator, context):
+        try:
+            for request in request_iterator:
+                # enqueue request in queue
+                while True:
+                    try:
+                        # with timeout to permit detection of killed caller
+                        self.receive_queue.put(request, timeout=1.0)
+                    except queue.Full:
+                        if not context.is_active():
+                            logging.info("RPC inactive - leaving callAnswersetSolver")
+                            break
+                    else:
+                        break
+
+                # leave if orchestrator disconnected
+                if not context.is_active():
+                    logging.info("RPC inactive - leaving callAnswersetSolver")
+                    break
+        except Exception as e:
+            logging.info("exception in receiveAnswersetSolverResult: %s\n%s", e, traceback.format_exc())
+
+        return sudoku_design_evaluator_pb2.Empty()
+
 
 configfile = os.environ['CONFIG'] if 'CONFIG' in os.environ else "config.json"
 logging.info("loading config from %s", configfile)

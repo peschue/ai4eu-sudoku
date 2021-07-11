@@ -71,8 +71,12 @@ message SudokuDesignEvaluationResult {
 }
 
 service SudokuDesignEvaluator {
-  rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (SolverJob);
-  rpc processSolverResult(SolveResultAnswersets) returns(SudokuDesignEvaluationResult);
+  // the main entry point
+  rpc evaluateSudokuDesign(SudokuDesignEvaluationJob) returns (SudokuDesignEvaluationResult);
+
+  // calling a OneShotAnswerSetSolver as a sub-procedure
+  rpc callAnswersetSolver(Empty) returns(stream SolverJob);
+  rpc receiveAnswersetSolverResult(stream SolveResultAnswersets) returns(Empty);
 }
 
 // additional code for GUI
