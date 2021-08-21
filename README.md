@@ -100,9 +100,11 @@ See the video.
 
 ## Download Solution Package
 
-See the video.
+See the video and `Tutorial-Cheatsheet.txt`.
 
 ## Deploy in a kubernetes environment
+
+See the video and `Tutorial-Cheatsheet.txt`, especially for how to access the solution if you use `minikube`.
 
 # Development Documentation
 
