@@ -44,7 +44,7 @@ def main():
 
     logging.info("connecting to ASP solver at %s", aspconn)
     aspsolver_channel = grpc.insecure_channel(aspconn)
-    aspsolver_stub = pb_grpc.OneshotSolverStub(aspsolver_channel)
+    aspsolver_stub = pb_grpc.OneShotAnswerSetSolverStub(aspsolver_channel)
 
     while True:
         try:
@@ -55,7 +55,7 @@ def main():
             logging.info("calling SudokuDesignEvaluator.evaluateSudokuDesign() with guijob")
             solverjob = evaluator_stub.evaluateSudokuDesign(guijob)
 
-            logging.info("calling OneshotSolver.solve() with parameters %s", solverjob.parameters)
+            logging.info("calling OneShotAnswerSetSolverStub.solve() with parameters %s", solverjob.parameters)
             aspresult = aspsolver_stub.solve(solverjob)
 
             logging.info(

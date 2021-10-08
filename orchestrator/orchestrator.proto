@@ -43,7 +43,7 @@ message SolveResultAnswersets {
   repeated Answerset answers = 2;
 }
 
-service OneshotSolver {
+service OneShotAnswerSetSolver {
   rpc solve(SolverJob) returns (SolveResultAnswersets);
 }
 
